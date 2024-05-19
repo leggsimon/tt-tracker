@@ -12,7 +12,13 @@ npm run dev
 
 ## Deployment
 
-This is deployed on [fly.io](https://fly.io) and requires the `flyctl` CLI installed.
+This app is deployed on [fly.io](https://fly.io).
+
+Commits to the `main` branch should be deployed automatically.
+
+### Manual deployment
+
+Manual deployment requires the `flyctl` CLI installed.
 
 To deploy changes:
 
