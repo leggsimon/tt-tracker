@@ -10,6 +10,16 @@ Run the Vite dev server:
 npm run dev
 ```
 
+### Database changes
+
+Seed data is in `prisma/seed.ts` To delete and populate with seed data run
+
+```
+rm prisma/dev.db &&\
+prisma db push &&\
+prisma db seed
+```
+
 ## Deployment
 
 This app is deployed on [fly.io](https://fly.io).
