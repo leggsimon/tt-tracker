@@ -6,13 +6,15 @@ async function seed() {
 		db.user.create({
 			data: {
 				username: 'Simon',
-				password: 'simonpassword',
+				// password: 'simonpassword',
+				passwordHash: '$2a$10$jgS1EoLZ7d3Z3KVMWPxNdO9LwFq1I1kytQkljRcD70lvP0lyOnTZq',
 			},
 		}),
 		db.user.create({
 			data: {
 				username: 'Quinn',
-				password: 'quinnpassword',
+				// password: 'quinnpassword',
+				passwordHash: '$2a$10$dCl2UwkqmDX5LgOvr46zfu/6ktM.iCle7mVNdESd26B5Dix4.6xme',
 			},
 		}),
 	]);

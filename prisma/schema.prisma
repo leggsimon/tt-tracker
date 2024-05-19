@@ -15,7 +15,7 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   username       String   @unique
-  password       String
+  passwordHash   String
   player1        Game[]   @relation("player1")
   player2        Game[]   @relation("player2")
   startingPlayer Game[]   @relation("startingPlayer")

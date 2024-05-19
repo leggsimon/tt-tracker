@@ -1,0 +1,33 @@
+.Header {
+	background-color: rgb(31 41 55);
+	color: white;
+}
+
+.Header-NavContainer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	/* //items-center p-4 max-w-5xl mx-auto w-full */
+
+	padding: 1rem;
+	/* max-width: 5xl; */
+	margin: 0 auto;
+	width: 100%;
+}
+
+.Header-NavigationLinksContainer {
+	flex-grow: 1;
+}
+
+.Header-NavigationLinks {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.Header-UserActions {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+}
