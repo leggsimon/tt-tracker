@@ -1,4 +1,4 @@
-# Welcome to Remix + Vite!
+# 🏓 Table Tennis Tracker
 
 📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
 
@@ -6,31 +6,22 @@
 
 Run the Vite dev server:
 
-```shellscript
+```sh
 npm run dev
 ```
 
 ## Deployment
 
-First, build your app for production:
+This is deployed on [fly.io](https://fly.io) and requires the `flyctl` CLI installed.
+
+To deploy changes:
 
 ```sh
-npm run build
+fly deploy
 ```
 
-Then run the app in production mode:
+To open the app
 
 ```sh
-npm start
+fly apps open
 ```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
