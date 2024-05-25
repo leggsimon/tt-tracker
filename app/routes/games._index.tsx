@@ -75,7 +75,7 @@ export default function GamesIndex() {
 				</dl>
 				<ul>
 					{data.games.map((game) => {
-						const playedAtDateString = new Date(game.playedAt).toLocaleDateString();
+						const playedAtDateString = new Date(game.playedAt).toLocaleDateString('en-GB');
 						return (
 							<li key={game.id}>
 								{playedAtDateString} -{' '}
