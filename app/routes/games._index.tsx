@@ -2,7 +2,7 @@ import { LinksFunction, LoaderFunctionArgs, json, type MetaFunction } from '@rem
 import { Link, useLoaderData } from '@remix-run/react';
 import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
-import stylesUrl from '~/styles/index.css?url';
+import stylesUrl from '~/styles/games.css?url';
 import { db } from '~/utils/db.server';
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesUrl }];
@@ -72,10 +72,11 @@ export default function GamesIndex() {
 		<>
 			<Header user={data.user} />
 			<main>
-				<p>All Games</p>
+				<div className='header-row'>
+					<h1>Games</h1>
 
-				<Link to='/games/new'>New Game</Link>
-
+					<Link to='/games/new'>New Game</Link>
+				</div>
 				<dl>
 					<dt>Total Points For</dt>
 					<dd>{totalPointsFor}</dd>
@@ -93,7 +94,7 @@ export default function GamesIndex() {
 						return acc;
 					}, {} as Record<string, typeof games>);
 					return (
-						<section key={date}>
+						<section className='card' key={date}>
 							<h2>{date}</h2>
 							{Object.entries(gamesGroupedByOpponent).map(([opponentId, games]) => {
 								const opponent =
