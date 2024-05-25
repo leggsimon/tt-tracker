@@ -1,5 +1,5 @@
 import { LinksFunction, LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
 import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
 import stylesUrl from '~/styles/index.css?url';
@@ -65,6 +65,8 @@ export default function GamesIndex() {
 			<main>
 				<p>All Games</p>
 
+				<Link to='/games/new'>New Game</Link>
+
 				<dl>
 					<dt>Total Points For</dt>
 					<dd>{totalPointsFor}</dd>
@@ -76,8 +78,11 @@ export default function GamesIndex() {
 						const playedAtDateString = new Date(game.playedAt).toLocaleDateString();
 						return (
 							<li key={game.id}>
-								{playedAtDateString} - {game.player1.username} {game.player1Score} vs{' '}
-								{game.player2Score} {game.player2.username}
+								{playedAtDateString} -{' '}
+								<Link to={`/games/${game.id}`}>
+									{game.player1.username} {game.player1Score} vs {game.player2Score}{' '}
+									{game.player2.username}
+								</Link>
 							</li>
 						);
 					})}

@@ -56,6 +56,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const startingServerPlayerId = form.get('startingServerPlayerId');
 	const playedAt = form.get('playedAt');
 
+	const fields = { player1Id, player2Id, player1Score, player2Score, startingServerPlayerId };
+	console.log({ fields });
+
 	if (
 		typeof player1Id !== 'string' ||
 		typeof player2Id !== 'string' ||
@@ -75,7 +78,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		player1Score: validateScore(player1Score),
 		player2Score: validateScore(player2Score),
 	};
-	const fields = { player1Id, player2Id, player1Score, player2Score, startingServerPlayerId };
 
 	if (Object.values(fieldErrors).some(Boolean)) {
 		return badRequest({

@@ -13,11 +13,10 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 	return (
 		<header className='Header'>
 			<div className='Header-NavContainer'>
-				<div className='logo'>Logo</div>
 				<nav className='Header-NavigationLinksContainer'>
 					<ul className='Header-NavigationLinks'>
 						<li>
-							<Link to='/'>Home</Link>
+							<Link to='/games'>Games</Link>
 						</li>
 					</ul>
 				</nav>
