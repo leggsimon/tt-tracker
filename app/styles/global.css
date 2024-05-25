@@ -1,14 +1,21 @@
+/* @font-face {
+	font-family: 'baloo';
+	src: url('/fonts/baloo/baloo.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+} */
+
 :root {
-	--hs-links: 48 100%;
-	--color-foreground: hsl(0, 0%, 100%);
-	--color-background: hsl(239, 73%, 19%);
+	--hs-links: 248 100%;
+	--color-background: hsl(0, 0%, 100%);
+	--color-foreground: hsl(239, 73%, 19%);
 	--color-links: hsl(var(--hs-links) 50%);
 	--color-links-hover: hsl(var(--hs-links) 45%);
 	--color-border: hsl(239, 73%, 19%);
 	--color-invalid: hsl(356, 100%, 71%);
 	--font-body: -apple-system, 'Segoe UI', Helvetica Neue, Helvetica, Roboto, Arial, sans-serif,
 		system-ui, 'Apple Color Emoji', 'Segoe UI Emoji';
-	--font-display: var(--font-body);
+	--font-display: baloo, var(--font-body);
 }
 
 html {
