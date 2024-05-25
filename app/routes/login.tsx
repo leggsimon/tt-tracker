@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LinksFunction, MetaFunction } from '@remix-run/node';
-import { Link, useActionData, useSearchParams } from '@remix-run/react';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
 
 import stylesUrl from '~/styles/login.css?url';
 import { db } from '~/utils/db.server';
@@ -62,6 +62,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	switch (loginType) {
 		case 'login': {
 			const user = await login({ username, password });
+			console.log({ user }); // TODO: remove
 			if (!user) {
 				return badRequest({
 					fieldErrors: null,
@@ -111,7 +112,7 @@ export default function Login() {
 		<div className='container'>
 			<div className='content' data-light=''>
 				<h1>Login</h1>
-				<form method='post'>
+				<Form method='post'>
 					<input
 						type='hidden'
 						name='redirectTo'
@@ -182,7 +183,7 @@ export default function Login() {
 					<button type='submit' className='button'>
 						Submit
 					</button>
-				</form>
+				</Form>
 			</div>
 			<div className='links'>
 				<ul>

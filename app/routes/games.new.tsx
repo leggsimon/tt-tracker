@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import {
+	Form,
 	isRouteErrorResponse,
 	Link,
 	useActionData,
@@ -107,7 +108,7 @@ export default function NewGameRoute() {
 			<Header user={data.user} />
 			<main>
 				<p>Add a new game</p>
-				<form method='post' className='new-game-form'>
+				<Form method='post' className='new-game-form'>
 					<input type='hidden' name='player1Id' value={data.user.id} />
 					<div>
 						<label>
@@ -186,7 +187,7 @@ export default function NewGameRoute() {
 
 						<button type='submit'>Submit</button>
 					</div>
-				</form>
+				</Form>
 			</main>
 		</>
 	);

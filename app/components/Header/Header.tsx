@@ -1,4 +1,4 @@
-import { Link } from '@remix-run/react';
+import { Form, Link } from '@remix-run/react';
 import React from 'react';
 import './Header.css';
 
@@ -25,11 +25,11 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 					{user ? (
 						<>
 							<span>Hi, {user.username}!</span>
-							<form action='/logout' method='post'>
+							<Form action='/logout' method='post'>
 								<button type='submit' className='button'>
 									Logout
 								</button>
-							</form>
+							</Form>
 						</>
 					) : (
 						<Link to='/login'>Login</Link>
