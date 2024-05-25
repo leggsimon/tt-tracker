@@ -54,11 +54,11 @@ export default function GameRoute() {
 						<tbody>
 							<tr>
 								<td>
-									{data.game.player1Score}
+									<span className='tabular-nums'>{data.game.player1Score}</span>
 									{data.game.startingPlayerId === data.game.player1Id ? '*' : ''}
 								</td>
 								<td>
-									{data.game.player2Score}
+									<span className='tabular-nums'>{data.game.player2Score}</span>
 									{data.game.startingPlayerId === data.game.player2Id ? '*' : ''}
 								</td>
 							</tr>

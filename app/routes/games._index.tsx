@@ -80,7 +80,8 @@ export default function GamesIndex() {
 							<li key={game.id}>
 								{playedAtDateString} -{' '}
 								<Link to={`/games/${game.id}`}>
-									{game.player1.username} {game.player1Score} vs {game.player2Score}{' '}
+									{game.player1.username} <span className='tabular-nums'>{game.player1Score}</span>{' '}
+									vs <span className='tabular-nums'>{game.player2Score}</span>{' '}
 									{game.player2.username}
 								</Link>
 							</li>

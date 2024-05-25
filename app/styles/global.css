@@ -339,3 +339,7 @@ label > [type='radio'] {
 	border-radius: 0.25rem;
 	padding: 0.5rem 1rem;
 }
+
+.tabular-nums {
+	font-variant-numeric: tabular-nums;
+}
