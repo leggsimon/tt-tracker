@@ -30,11 +30,14 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export default function GameRoute() {
 	const data = useLoaderData<typeof loader>();
 
+	const playedAtDate = new Date(data.game?.playedAt);
+
 	return (
 		<>
 			<Header user={data.user} />
 			<main>
 				<p>Game</p>
+				<p>Played on: {playedAtDate.toLocaleString()}</p>
 				{data.game ? (
 					<table>
 						<thead>
