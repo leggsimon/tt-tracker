@@ -59,6 +59,15 @@ export default function GamesIndex() {
 		},
 	);
 
+	const gamesGroupedByByDate = data.games.reduce((acc, game) => {
+		const playedAtDate = new Date(game.playedAt).toLocaleDateString('en-GB');
+		if (!acc[playedAtDate]) {
+			acc[playedAtDate] = [];
+		}
+		acc[playedAtDate].push(game);
+		return acc;
+	}, {} as Record<string, typeof data.games>);
+
 	return (
 		<>
 			<Header user={data.user} />
@@ -73,21 +82,92 @@ export default function GamesIndex() {
 					<dt>Total Points Against</dt>
 					<dd>{totalPointsAgainst}</dd>
 				</dl>
-				<ul>
-					{data.games.map((game) => {
-						const playedAtDateString = new Date(game.playedAt).toLocaleDateString('en-GB');
-						return (
-							<li key={game.id}>
-								{playedAtDateString} -{' '}
-								<Link to={`/games/${game.id}`}>
-									{game.player1.username} <span className='tabular-nums'>{game.player1Score}</span>{' '}
-									vs <span className='tabular-nums'>{game.player2Score}</span>{' '}
-									{game.player2.username}
-								</Link>
-							</li>
-						);
-					})}
-				</ul>
+
+				{Object.entries(gamesGroupedByByDate).map(([date, games]) => {
+					const gamesGroupedByOpponent = games.reduce((acc, game) => {
+						const opponentId = game.player1Id === data.user.id ? game.player2Id : game.player1Id;
+						if (!acc[opponentId]) {
+							acc[opponentId] = [];
+						}
+						acc[opponentId].push(game);
+						return acc;
+					}, {} as Record<string, typeof games>);
+					return (
+						<section key={date}>
+							<h2>{date}</h2>
+							{Object.entries(gamesGroupedByOpponent).map(([opponentId, games]) => {
+								const opponent =
+									games[0].player1Id === data.user.id ? games[0].player2 : games[0].player1;
+								return (
+									<table key={opponentId}>
+										<thead>
+											<tr>
+												<th>You</th>
+												<th>{opponent.username}</th>
+											</tr>
+										</thead>
+										<tbody>
+											{games.map((game) => {
+												const yourScore =
+													game.player1Id === data.user.id ? game.player1Score : game.player2Score;
+												const oppScore =
+													game.player1Id === data.user.id ? game.player2Score : game.player1Score;
+												const player1ServedFirst = game.startingPlayerId === game.player1Id;
+												return (
+													<tr key={game.id}>
+														<td>
+															<Link to={`/games/${game.id}`}>
+																<span className='tabular-nums'>
+																	{yourScore}
+																	{player1ServedFirst ? '*' : ''}
+																</span>
+															</Link>
+														</td>
+														<td>
+															<Link to={`/games/${game.id}`}>
+																<span className='tabular-nums'>
+																	{oppScore}
+																	{player1ServedFirst ? '' : '*'}
+																</span>
+															</Link>
+														</td>
+													</tr>
+												);
+											})}
+											<tr>
+												<td colSpan={2}>Totals</td>
+											</tr>
+											<tr>
+												<td>
+													<span className='tabular-nums'>
+														{games.reduce((acc, game) => {
+															if (game.player1Id === data.user.id) {
+																return acc + game.player1Score;
+															} else {
+																return acc + game.player2Score;
+															}
+														}, 0)}
+													</span>
+												</td>
+												<td>
+													<span className='tabular-nums'>
+														{games.reduce((acc, game) => {
+															if (game.player1Id === data.user.id) {
+																return acc + game.player2Score;
+															} else {
+																return acc + game.player1Score;
+															}
+														}, 0)}
+													</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								);
+							})}
+						</section>
+					);
+				})}
 			</main>
 		</>
 	);
