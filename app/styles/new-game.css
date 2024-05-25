@@ -1,0 +1,15 @@
+main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.new-game-form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	max-width: 300px;
+}
+.score-row {
+	display: flex;
+	justify-content: space-between;
+}
