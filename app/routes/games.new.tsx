@@ -53,13 +53,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const player2Score = form.get('player2Score');
 
 	const startingServerPlayerId = form.get('startingServerPlayerId');
+	const playedAt = form.get('playedAt');
 
 	if (
 		typeof player1Id !== 'string' ||
 		typeof player2Id !== 'string' ||
 		typeof player1Score !== 'string' ||
 		typeof player2Score !== 'string' ||
-		typeof startingServerPlayerId !== 'string'
+		typeof startingServerPlayerId !== 'string' ||
+		typeof playedAt !== 'string'
 	) {
 		return badRequest({
 			fieldErrors: null,
@@ -89,6 +91,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 			player1Score: parseInt(player1Score, 10),
 			player2Score: parseInt(player2Score, 10),
 			startingPlayerId: startingServerPlayerId === 'player' ? player1Id : player2Id,
+			playedAt: new Date(playedAt),
 		},
 	});
 
@@ -168,6 +171,11 @@ export default function NewGameRoute() {
 							Opponent
 						</label>
 					</div>
+
+					<label>
+						Played On:
+						<input type='datetime-local' name='playedAt' />
+					</label>
 
 					<div>
 						{actionData?.formError ? (

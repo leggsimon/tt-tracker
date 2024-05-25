@@ -72,12 +72,15 @@ export default function GamesIndex() {
 					<dd>{totalPointsAgainst}</dd>
 				</dl>
 				<ul>
-					{data.games.map((game) => (
-						<li key={game.id}>
-							{game.player1.username} {game.player1Score} vs {game.player2Score}{' '}
-							{game.player2.username}
-						</li>
-					))}
+					{data.games.map((game) => {
+						const playedAtDateString = new Date(game.playedAt).toLocaleDateString();
+						return (
+							<li key={game.id}>
+								{playedAtDateString} - {game.player1.username} {game.player1Score} vs{' '}
+								{game.player2Score} {game.player2.username}
+							</li>
+						);
+					})}
 				</ul>
 			</main>
 		</>
