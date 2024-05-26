@@ -59,6 +59,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		});
 	}
 
+	console.log({ username, loginType }); // FIXME: remove
+
 	switch (loginType) {
 		case 'login': {
 			const user = await login({ username, password });
@@ -99,7 +101,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 			return badRequest({
 				fieldErrors: null,
 				fields,
-				formError: 'Login type invalid',
+				formError: `Login type invalid. Got "${loginType}"`,
 			});
 		}
 	}
@@ -110,7 +112,7 @@ export default function Login() {
 	const [searchParams] = useSearchParams();
 	return (
 		<div className='container'>
-			<div className='content' data-light=''>
+			<div className='content'>
 				<h1>Login</h1>
 				<Form method='post'>
 					<input
