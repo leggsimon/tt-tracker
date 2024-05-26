@@ -34,7 +34,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 		  })
 		: [];
 
-	return json({ user, games });
+	return json({
+		user,
+		games: games.filter((game) => !game.isDeleted),
+		deletedGames: games.filter((game) => game.isDeleted),
+	});
 };
 
 export default function GamesIndex() {
@@ -169,6 +173,41 @@ export default function GamesIndex() {
 						</section>
 					);
 				})}
+
+				{data.deletedGames.length > 0 ? (
+					<details>
+						<summary>Deleted Games</summary>
+						<table>
+							<thead>
+								<tr>
+									<th>Opponent</th>
+									<th>Your Score</th>
+									<th>Opponent’s Score</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								{data.deletedGames.map((game) => {
+									const opponent = game.player1Id === data.user.id ? game.player2 : game.player1;
+									return (
+										<tr key={game.id}>
+											<td>{opponent.username}</td>
+											<td>
+												{game.player1Id === data.user.id ? game.player1Score : game.player2Score}
+											</td>
+											<td>
+												{game.player1Id === data.user.id ? game.player2Score : game.player1Score}
+											</td>
+											<td>
+												<Link to={`/games/${game.id}`}>View</Link>
+											</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+					</details>
+				) : null}
 			</main>
 		</>
 	);
