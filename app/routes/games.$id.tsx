@@ -30,8 +30,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
 	const form = await request.formData();
-	if (form.get('intent') !== 'delete') {
-		throw new Response(`The intent ${form.get('intent')} is not supported`, { status: 400 });
+	const intent = form.get('intent');
+	if (intent !== 'delete' && intent !== 'undelete') {
+		throw new Response(`The intent ${intent} is not supported`, { status: 400 });
 	}
 	const userId = await requireUserId(request);
 	const game = await db.game.findUnique({
@@ -49,7 +50,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 	}
 	await db.game.update({
 		where: { id: params.id },
-		data: { isDeleted: true },
+		data: { isDeleted: intent === 'delete' },
 	});
 	return redirect('/games');
 };
@@ -91,9 +92,15 @@ export default function GameRoute() {
 						</tbody>
 					</table>
 					<form method='post'>
-						<button className='button' name='intent' type='submit' value='delete'>
-							Delete
-						</button>
+						{data.game.isDeleted ? (
+							<button className='button' name='intent' type='submit' value='undelete'>
+								Undelete
+							</button>
+						) : (
+							<button className='button' name='intent' type='submit' value='delete'>
+								Delete
+							</button>
+						)}
 					</form>
 				</main>
 			) : (
