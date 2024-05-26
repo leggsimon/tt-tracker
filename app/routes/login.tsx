@@ -34,6 +34,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const password = form.get('password');
 	const username = form.get('username');
 	const redirectTo = validateUrl((form.get('redirectTo') as string) || '/');
+	console.log({ username, loginType }); // FIXME: remove
+
 	if (
 		typeof loginType !== 'string' ||
 		typeof password !== 'string' ||
@@ -58,8 +60,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 			formError: null,
 		});
 	}
-
-	console.log({ username, loginType }); // FIXME: remove
 
 	switch (loginType) {
 		case 'login': {
