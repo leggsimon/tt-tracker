@@ -1,9 +1,9 @@
-import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { isRouteErrorResponse, Link, useLoaderData, useRouteError } from '@remix-run/react';
 
 import { db } from '~/utils/db.server';
-import { getUser } from '~/utils/session.server';
+import { getUser, requireUserId } from '~/utils/session.server';
 
 import stylesUrl from '~/styles/new-game.css?url';
 import Header from '~/components/Header/Header';
@@ -28,6 +28,32 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 	return json({ user, game });
 };
 
+export const action = async ({ params, request }: ActionFunctionArgs) => {
+	const form = await request.formData();
+	if (form.get('intent') !== 'delete') {
+		throw new Response(`The intent ${form.get('intent')} is not supported`, { status: 400 });
+	}
+	const userId = await requireUserId(request);
+	const game = await db.game.findUnique({
+		where: { id: params.id },
+	});
+	if (!game) {
+		throw new Response("Can't delete what does not exist", {
+			status: 404,
+		});
+	}
+
+	console.log({ game, userId });
+	if (game.player1Id !== userId && game.player2Id !== userId) {
+		throw new Response("Pssh, nice try. That's not your game", { status: 403 });
+	}
+	await db.game.update({
+		where: { id: params.id },
+		data: { isDeleted: true },
+	});
+	return redirect('/games');
+};
+
 export default function GameRoute() {
 	const data = useLoaderData<typeof loader>();
 
@@ -40,10 +66,10 @@ export default function GameRoute() {
 	return (
 		<>
 			<Header user={data.user} />
-			<main>
-				<p>Game</p>
-				<p>Played on: {date}</p>
-				{data.game ? (
+			{data.game ? (
+				<main>
+					<p>Game</p>
+					<p>Played on: {date}</p>
 					<table>
 						<thead>
 							<tr>
@@ -64,16 +90,25 @@ export default function GameRoute() {
 							</tr>
 						</tbody>
 					</table>
-				) : (
+					<form method='post'>
+						<button className='button' name='intent' type='submit' value='delete'>
+							Delete
+						</button>
+					</form>
+				</main>
+			) : (
+				<main>
 					<p>Game not found</p>
-				)}
-			</main>
+				</main>
+			)}
 		</>
 	);
 }
 
 export function ErrorBoundary() {
 	const error = useRouteError();
+
+	console.error(error);
 
 	if (isRouteErrorResponse(error) && error.status === 401) {
 		return (
