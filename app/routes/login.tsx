@@ -127,6 +127,7 @@ export default function Login() {
 								type='radio'
 								name='loginType'
 								value='login'
+								autoComplete='off'
 								defaultChecked={
 									!actionData?.fields?.loginType || actionData?.fields?.loginType === 'login'
 								}
@@ -138,6 +139,7 @@ export default function Login() {
 								type='radio'
 								name='loginType'
 								value='register'
+								autoComplete='off'
 								defaultChecked={actionData?.fields?.loginType === 'register'}
 							/>{' '}
 							Register
