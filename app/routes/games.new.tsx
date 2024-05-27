@@ -99,7 +99,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		},
 	});
 
-	return redirect(`/games/${game.id}`);
+	return redirect(`/games`);
 };
 
 export default function NewGameRoute() {
