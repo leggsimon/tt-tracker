@@ -120,7 +120,7 @@ export default function GamesIndex() {
 												const player1ServedFirst = game.startingPlayerId === game.player1Id;
 												return (
 													<tr key={game.id}>
-														<td>
+														<td className={yourScore > oppScore ? 'winner' : 'loser'}>
 															<Link to={`/games/${game.id}`}>
 																<span className='tabular-nums'>
 																	{yourScore}
@@ -128,7 +128,7 @@ export default function GamesIndex() {
 																</span>
 															</Link>
 														</td>
-														<td>
+														<td className={yourScore < oppScore ? 'winner' : 'loser'}>
 															<Link to={`/games/${game.id}`}>
 																<span className='tabular-nums'>
 																	{oppScore}
