@@ -112,48 +112,43 @@ export default function NewGameRoute() {
 				<p>Add a new game</p>
 				<Form method='post' className='card'>
 					<input type='hidden' name='player1Id' value={data.user.id} />
-					<div>
-						<label>
-							Opponent:
-							<select name='player2Id' required>
-								{data.players
-									.filter((player) => player.id !== data.user.id)
-									.map((player) => (
-										<option key={player.id} value={player.id}>
-											{player.username}
-										</option>
-									))}
-							</select>
-						</label>
-					</div>
 
-					<div>
-						<label>
-							Your score:
-							<input
-								required
-								min={0}
-								type='number'
-								name='player1Score'
-								defaultValue={actionData?.fields?.player1Score}
-							/>
-						</label>
-					</div>
+					<label className='form-row'>
+						Opponent:
+						<select name='player2Id' required>
+							{data.players
+								.filter((player) => player.id !== data.user.id)
+								.map((player) => (
+									<option key={player.id} value={player.id}>
+										{player.username}
+									</option>
+								))}
+						</select>
+					</label>
 
-					<div>
-						<label>
-							Opponent’s score:
-							<input
-								required
-								min={0}
-								type='number'
-								name='player2Score'
-								defaultValue={actionData?.fields?.player2Score}
-							/>
-						</label>
-					</div>
+					<label className='form-row'>
+						Your score:
+						<input
+							required
+							min={0}
+							type='number'
+							name='player1Score'
+							defaultValue={actionData?.fields?.player1Score}
+						/>
+					</label>
 
-					<div>
+					<label className='form-row'>
+						Opponent’s score:
+						<input
+							required
+							min={0}
+							type='number'
+							name='player2Score'
+							defaultValue={actionData?.fields?.player2Score}
+						/>
+					</label>
+
+					<div className='form-row'>
 						<p>Who served first?</p>
 						<label>
 							<input
@@ -175,19 +170,21 @@ export default function NewGameRoute() {
 						</label>
 					</div>
 
-					<label>
+					<label className='form-row'>
 						Played On:
 						<input type='datetime-local' name='playedAt' />
 					</label>
 
-					<div>
+					<div className='form-row'>
 						{actionData?.formError ? (
 							<p className='form-validation-error' role='alert'>
 								{actionData.formError}
 							</p>
 						) : null}
 
-						<button type='submit'>Submit</button>
+						<button type='submit' className='button'>
+							Submit
+						</button>
 					</div>
 				</Form>
 			</main>
