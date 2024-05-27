@@ -110,7 +110,7 @@ export default function NewGameRoute() {
 			<Header user={data.user} />
 			<main>
 				<p>Add a new game</p>
-				<Form method='post' className='new-game-form'>
+				<Form method='post' className='card'>
 					<input type='hidden' name='player1Id' value={data.user.id} />
 					<div>
 						<label>

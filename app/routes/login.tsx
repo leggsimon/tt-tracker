@@ -112,7 +112,7 @@ export default function Login() {
 	const [searchParams] = useSearchParams();
 	return (
 		<div className='container'>
-			<div className='content'>
+			<div className='card'>
 				<h1>Login</h1>
 				<Form method='post'>
 					<input
