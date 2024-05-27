@@ -1,3 +1,4 @@
+import React from 'react';
 import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import {
@@ -105,6 +106,14 @@ export default function NewGameRoute() {
 	const data = useLoaderData<typeof loader>();
 	const actionData = useActionData<typeof action>();
 
+	const [nowDateString, setNowDateString] = React.useState('');
+
+	React.useEffect(() => {
+		setNowDateString(
+			new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0],
+		);
+	}, []);
+
 	return (
 		<>
 			<Header user={data.user} />
@@ -172,7 +181,7 @@ export default function NewGameRoute() {
 
 					<label className='form-row'>
 						Played On:
-						<input type='datetime-local' name='playedAt' />
+						<input type='datetime-local' name='playedAt' defaultValue={nowDateString} />
 					</label>
 
 					<div className='form-row'>
