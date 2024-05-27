@@ -1,6 +1,7 @@
 .Header {
-	background-color: rgb(31 41 55);
-	color: white;
+	background-color: var(--color-background);
+	color: var(--color-foreground);
+}
 }
 
 .Header-NavContainer {
