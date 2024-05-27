@@ -107,6 +107,7 @@ export default function NewGameRoute() {
 	const actionData = useActionData<typeof action>();
 
 	const [nowDateString, setNowDateString] = React.useState('');
+	const [isSubmitting, setIsSubmitting] = React.useState(false);
 
 	React.useEffect(() => {
 		setNowDateString(
@@ -114,12 +115,16 @@ export default function NewGameRoute() {
 		);
 	}, []);
 
+	function handleSubmit() {
+		setIsSubmitting(true);
+	}
+
 	return (
 		<>
 			<Header user={data.user} />
 			<main>
 				<p>Add a new game</p>
-				<Form method='post' className='card'>
+				<Form method='post' className='card' onSubmit={handleSubmit}>
 					<input type='hidden' name='player1Id' value={data.user.id} />
 
 					<label className='form-row'>
@@ -191,7 +196,7 @@ export default function NewGameRoute() {
 							</p>
 						) : null}
 
-						<button type='submit' className='button'>
+						<button type='submit' className='button' disabled={isSubmitting}>
 							Submit
 						</button>
 					</div>
