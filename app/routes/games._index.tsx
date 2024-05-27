@@ -27,6 +27,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 				where: {
 					OR: [{ player1Id: user.id }, { player2Id: user.id }],
 				},
+				orderBy: {
+					playedAt: 'desc',
+				},
 				include: {
 					player1: true,
 					player2: true,
