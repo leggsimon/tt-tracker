@@ -88,7 +88,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		});
 	}
 
-	const game = await db.game.create({
+	await db.game.create({
 		data: {
 			player1Id: player1Id,
 			player2Id: player2Id,
