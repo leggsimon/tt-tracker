@@ -2,16 +2,18 @@
 	background-color: var(--color-background);
 	color: var(--color-foreground);
 }
+
+.logo {
+	font-size: 1.5rem;
+	margin-right: 1rem;
 }
 
 .Header-NavContainer {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	/* //items-center p-4 max-w-5xl mx-auto w-full */
 
 	padding: 1rem;
-	/* max-width: 5xl; */
 	margin: 0 auto;
 	width: 100%;
 }
@@ -20,9 +22,15 @@
 	flex-grow: 1;
 }
 
+.Header-NavigationLinksContainer ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
 .Header-NavigationLinks {
 	display: flex;
-	justify-content: center;
+	/* justify-content: center; */
 	gap: 1rem;
 }
 
