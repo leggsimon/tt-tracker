@@ -13,6 +13,7 @@ export default {
 			lavender: '#ABA9FC',
 			sand: '#FCE1AA',
 			peach: '#FEE3C6',
+			thunderbird: '#C83919',
 		},
 		boxShadow: {
 			sm: '2px 2px 0 0 #000000;',

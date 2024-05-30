@@ -1,5 +1,6 @@
 import { Form, Link } from '@remix-run/react';
 import React from 'react';
+import { Button } from '../Button/Button';
 
 interface HeaderProps {
 	user: {
@@ -25,21 +26,13 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 						<>
 							<span className="text-sm">Hi, {user.username}!</span>
 							<Form action="/logout" method="post">
-								<button
-									type="submit"
-									className="border-3 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
-								>
-									Logout
-								</button>
+								<Button type="submit">Logout</Button>
 							</Form>
 						</>
 					) : (
-						<Link
-							className="border-3 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
-							to="/login"
-						>
+						<Button as={Link} to="/login">
 							Login
-						</Link>
+						</Button>
 					)}
 				</div>
 			</div>

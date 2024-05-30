@@ -3,6 +3,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
 import { db } from '~/utils/db.server';
+import { Button } from '~/components/Button/Button';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -82,12 +83,9 @@ export default function GamesIndex() {
 				<div className="flex items-center justify-between">
 					<h1 className="text-3xl font-bold">Games</h1>
 
-					<Link
-						className="border-3 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
-						to="/games/new"
-					>
+					<Button as={Link} to="/games/new">
 						New Game
-					</Link>
+					</Button>
 				</div>
 				<dl className="my-12 grid grid-cols-2 gap-4 text-center" role="table">
 					<dt className="font-bold">Total Points For</dt>
