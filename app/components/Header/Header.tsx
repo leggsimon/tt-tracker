@@ -1,6 +1,5 @@
 import { Form, Link } from '@remix-run/react';
 import React from 'react';
-import './Header.css';
 
 interface HeaderProps {
 	user: {
@@ -11,28 +10,36 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user }) => {
 	return (
-		<header className='Header'>
-			<div className='Header-NavContainer'>
-				<div className='logo'>🏓</div>
-				<nav className='Header-NavigationLinksContainer'>
-					<ul className='Header-NavigationLinks'>
-						<li>
-							<Link to='/games'>Games</Link>
+		<header className="mb-32 flex flex-row items-center border-b-2 bg-linen px-24 py-4">
+			<div className="flex w-full items-center">
+				<div className="font-display text-2xl font-bold uppercase">🏓</div>
+				<nav className="mx-6 flex-grow">
+					<ul className="flex flex-row items-center gap-5">
+						<li className="text-sm">
+							<Link to="/games">Games</Link>
 						</li>
 					</ul>
 				</nav>
-				<div className='Header-UserActions'>
+				<div className="flex flex-row items-center gap-6 place-self-end">
 					{user ? (
 						<>
-							<span>Hi, {user.username}!</span>
-							<Form action='/logout' method='post'>
-								<button type='submit' className='button'>
+							<span className="text-sm">Hi, {user.username}!</span>
+							<Form action="/logout" method="post">
+								<button
+									type="submit"
+									className="border-2 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
+								>
 									Logout
 								</button>
 							</Form>
 						</>
 					) : (
-						<Link to='/login'>Login</Link>
+						<Link
+							className="border-2 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
+							to="/login"
+						>
+							Login
+						</Link>
 					)}
 				</div>
 			</div>
