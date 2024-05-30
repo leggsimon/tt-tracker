@@ -20,7 +20,11 @@ export default {
 			lg: '8px 6px 0 0 #000000;',
 			xl: '12px 8px 0 0 #000000;',
 		},
-		extend: {},
+		extend: {
+			borderWidth: {
+				3: '3px',
+			},
+		},
 	},
 	plugins: [],
 } satisfies Config;

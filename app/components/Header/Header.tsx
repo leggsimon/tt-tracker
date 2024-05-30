@@ -10,7 +10,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user }) => {
 	return (
-		<header className="mb-32 flex flex-row items-center border-b-2 bg-linen px-24 py-4">
+		<header className="mb-8 flex flex-row items-center border-b-2 bg-linen px-4 py-4 md:mb-16 md:px-24">
 			<div className="flex w-full items-center">
 				<div className="font-display text-2xl font-bold uppercase">🏓</div>
 				<nav className="mx-6 flex-grow">
@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 							<Form action="/logout" method="post">
 								<button
 									type="submit"
-									className="border-2 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
+									className="border-3 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
 								>
 									Logout
 								</button>
@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 						</>
 					) : (
 						<Link
-							className="border-2 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
+							className="border-3 border-black bg-orange px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
 							to="/login"
 						>
 							Login
