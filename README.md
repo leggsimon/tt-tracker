@@ -1,7 +1,5 @@
 # 🏓 Table Tennis Tracker
 
-📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
-
 ## Development
 
 Run the Vite dev server:
@@ -9,6 +7,22 @@ Run the Vite dev server:
 ```sh
 npm run dev
 ```
+
+### Initial setup
+
+```
+npm install
+cp .env.local .env
+prisma db push
+prisma db seed
+```
+
+This will create two users
+
+| Username | Password        |
+| -------- | --------------- |
+| `Simon`  | `simonpassword` |
+| `Quinn`  | `quinnpassword` |
 
 ### Database changes
 
