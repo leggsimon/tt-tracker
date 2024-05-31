@@ -1,15 +1,25 @@
-import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
+import type {
+	ActionFunctionArgs,
+	LinksFunction,
+	LoaderFunctionArgs,
+} from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { isRouteErrorResponse, Link, useLoaderData, useRouteError } from '@remix-run/react';
+import {
+	isRouteErrorResponse,
+	Link,
+	useLoaderData,
+	useRouteError,
+} from '@remix-run/react';
 
 import { db } from '~/utils/db.server';
 import { getUser, requireUserId } from '~/utils/session.server';
 
-import stylesUrl from '~/styles/new-game.css?url';
 import Header from '~/components/Header/Header';
 import React from 'react';
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesUrl }];
+export const links: LinksFunction = () => [
+	{ rel: 'stylesheet', href: stylesUrl },
+];
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 	const game = await db.game.findFirst({
@@ -32,7 +42,9 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 	const form = await request.formData();
 	const intent = form.get('intent');
 	if (intent !== 'delete' && intent !== 'undelete') {
-		throw new Response(`The intent ${intent} is not supported`, { status: 400 });
+		throw new Response(`The intent ${intent} is not supported`, {
+			status: 400,
+		});
 	}
 	const userId = await requireUserId(request);
 	const game = await db.game.findUnique({
@@ -81,23 +93,37 @@ export default function GameRoute() {
 						<tbody>
 							<tr>
 								<td>
-									<span className='tabular-nums'>{data.game.player1Score}</span>
-									{data.game.startingPlayerId === data.game.player1Id ? '*' : ''}
+									<span className="tabular-nums">{data.game.player1Score}</span>
+									{data.game.startingPlayerId === data.game.player1Id
+										? '*'
+										: ''}
 								</td>
 								<td>
-									<span className='tabular-nums'>{data.game.player2Score}</span>
-									{data.game.startingPlayerId === data.game.player2Id ? '*' : ''}
+									<span className="tabular-nums">{data.game.player2Score}</span>
+									{data.game.startingPlayerId === data.game.player2Id
+										? '*'
+										: ''}
 								</td>
 							</tr>
 						</tbody>
 					</table>
-					<form method='post'>
+					<form method="post">
 						{data.game.isDeleted ? (
-							<button className='button' name='intent' type='submit' value='undelete'>
+							<button
+								className="button"
+								name="intent"
+								type="submit"
+								value="undelete"
+							>
 								Undelete
 							</button>
 						) : (
-							<button className='button' name='intent' type='submit' value='delete'>
+							<button
+								className="button"
+								name="intent"
+								type="submit"
+								value="delete"
+							>
 								Delete
 							</button>
 						)}
@@ -119,12 +145,16 @@ export function ErrorBoundary() {
 
 	if (isRouteErrorResponse(error) && error.status === 401) {
 		return (
-			<div className='error-container'>
+			<div className="error-container">
 				<p>You must be logged in to view this game.</p>
-				<Link to='/login'>Login</Link>
+				<Link to="/login">Login</Link>
 			</div>
 		);
 	}
 
-	return <div className='error-container'>Something unexpected went wrong. Sorry about that.</div>;
+	return (
+		<div className="error-container">
+			Something unexpected went wrong. Sorry about that.
+		</div>
+	);
 }

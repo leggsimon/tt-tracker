@@ -134,9 +134,9 @@ export default function NewGameRoute() {
 				<Form method="post" className="card" onSubmit={handleSubmit}>
 					<input type="hidden" name="player1Id" value={data.user.id} />
 
-					<div className="my-2 flex flex-col gap-2">
+					<div className="my-2 mb-4 flex flex-col gap-2">
 						<label className="text-sm font-bold" htmlFor="player2Id">
-							Opponent:
+							Opponent
 						</label>
 						<select
 							className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
@@ -154,9 +154,9 @@ export default function NewGameRoute() {
 						</select>
 					</div>
 
-					<div className="my-2 flex flex-col gap-2">
+					<div className="my-2 mb-4 flex flex-col gap-2">
 						<label className="text-sm font-bold" htmlFor="player1Score">
-							Your score:
+							Your score
 						</label>
 						<input
 							className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
@@ -169,9 +169,9 @@ export default function NewGameRoute() {
 						/>
 					</div>
 
-					<div className="my-2 flex flex-col gap-2">
+					<div className="my-2 mb-4 flex flex-col gap-2">
 						<label className="text-sm font-bold" htmlFor="player2Score">
-							Opponent’s score:
+							Opponent’s score
 						</label>
 						<input
 							className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
@@ -184,10 +184,13 @@ export default function NewGameRoute() {
 						/>
 					</div>
 
-					<div className="my-2 flex flex-col gap-2">
+					<div className="my-2 mb-4 flex flex-col gap-2">
 						<p className="text-sm font-bold">Who served first?</p>
 						<div className="flex justify-between gap-4">
-							<div className="flex items-center gap-4">
+							<label
+								className="flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1 text-lg"
+								htmlFor="startingServerPlayer1"
+							>
 								<input
 									className="size-8 rounded-sm border-2 accent-orange"
 									id="startingServerPlayer1"
@@ -198,9 +201,12 @@ export default function NewGameRoute() {
 										actionData?.fields?.startingServerPlayerId === 'player'
 									}
 								/>
-								<label htmlFor="startingServerPlayer1">You</label>
-							</div>
-							<div className="flex items-center gap-4">
+								You
+							</label>
+							<label
+								className="flex basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1 text-lg"
+								htmlFor="startingServerPlayer2"
+							>
 								<input
 									className="size-8 rounded-sm border-2 accent-orange"
 									id="startingServerPlayer2"
@@ -211,14 +217,14 @@ export default function NewGameRoute() {
 										actionData?.fields?.startingServerPlayerId === 'opponent'
 									}
 								/>
-								<label htmlFor="startingServerPlayer2">Opponent</label>
-							</div>
+								Opponent
+							</label>
 						</div>
 					</div>
 
-					<div className="my-2 flex flex-col gap-2">
+					<div className="my-2 mb-4 flex flex-col gap-2">
 						<label className="text-sm font-bold" htmlFor="playedAt">
-							Played On:
+							Played on
 						</label>
 						<input
 							className="h-12 appearance-none rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
@@ -231,7 +237,7 @@ export default function NewGameRoute() {
 
 					<div className="mt-8 flex flex-col items-center">
 						{actionData?.formError ? (
-							<p className="text-thunderbird my-2 font-bold" role="alert">
+							<p className="my-2 font-bold text-thunderbird" role="alert">
 								{actionData.formError}
 							</p>
 						) : null}
