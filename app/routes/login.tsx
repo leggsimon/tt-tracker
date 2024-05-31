@@ -1,12 +1,12 @@
-import type { ActionFunctionArgs, LinksFunction, MetaFunction } from '@remix-run/node';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
+import { Button } from '~/components/Button/Button';
+import { PasswordInput, Input } from '~/components/Form/Form';
+import { Main } from '~/components/Main/Main';
 
-import stylesUrl from '~/styles/login.css?url';
 import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/request.server';
 import { createUserSession, login, register } from '~/utils/session.server';
-
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesUrl }];
 
 function validateUsername(username: string) {
 	if (username.length < 3) {
@@ -111,92 +111,83 @@ export default function Login() {
 	const actionData = useActionData<typeof action>();
 	const [searchParams] = useSearchParams();
 	return (
-		<div className='container'>
-			<div className='card'>
-				<h1>Login</h1>
-				<Form method='post'>
-					<input
-						type='hidden'
-						name='redirectTo'
-						value={searchParams.get('redirectTo') ?? undefined}
-					/>
-					<fieldset>
-						<legend className='sr-only'>Login or Register?</legend>
-						<label>
-							<input
-								type='radio'
-								name='loginType'
-								value='login'
-								data-1p-ignore
-								defaultChecked={
-									!actionData?.fields?.loginType || actionData?.fields?.loginType === 'login'
-								}
-							/>{' '}
-							Login
-						</label>
-						<label>
-							<input
-								type='radio'
-								name='loginType'
-								value='register'
-								data-1p-ignore
-								defaultChecked={actionData?.fields?.loginType === 'register'}
-							/>{' '}
-							Register
-						</label>
-					</fieldset>
-					<div>
-						<label htmlFor='username-input'>Username</label>
+		<Main>
+			<div className="grid h-screen place-content-center gap-6">
+				<div className="border-4 bg-linen p-4 shadow-xl">
+					<h1 className="mb-6 text-3xl font-bold">Login</h1>
+					<Form method="post">
 						<input
-							type='text'
-							id='username-input'
-							name='username'
-							defaultValue={actionData?.fields?.username}
-							aria-invalid={Boolean(actionData?.fieldErrors?.username)}
-							aria-errormessage={actionData?.fieldErrors?.username ? 'username-error' : undefined}
+							type="hidden"
+							name="redirectTo"
+							value={searchParams.get('redirectTo') ?? undefined}
 						/>
-						{actionData?.fieldErrors?.username ? (
-							<p className='form-validation-error' role='alert' id='username-error'>
-								{actionData.fieldErrors.username}
-							</p>
-						) : null}
-					</div>
-					<div>
-						<label htmlFor='password-input'>Password</label>
-						<input
-							id='password-input'
-							name='password'
-							type='password'
-							defaultValue={actionData?.fields?.password}
-							aria-invalid={Boolean(actionData?.fieldErrors?.password)}
-							aria-errormessage={actionData?.fieldErrors?.password ? 'password-error' : undefined}
-						/>
-						{actionData?.fieldErrors?.password ? (
-							<p className='form-validation-error' role='alert' id='password-error'>
-								{actionData.fieldErrors.password}
-							</p>
-						) : null}
-					</div>
-					<div id='form-error-message'>
-						{actionData?.formError ? (
-							<p className='form-validation-error' role='alert'>
-								{actionData.formError}
-							</p>
-						) : null}
-					</div>
-					<button type='submit' className='button'>
-						Submit
-					</button>
-				</Form>
-			</div>
-			<div className='links'>
-				<ul>
+						<fieldset className="flex justify-between gap-4">
+							<legend className="sr-only">Login or Register?</legend>
+							<label className="text-md flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1">
+								<input
+									className="size-8 rounded-sm border-2 accent-orange"
+									type="radio"
+									name="loginType"
+									value="login"
+									data-1p-ignore
+									defaultChecked={
+										!actionData?.fields?.loginType ||
+										actionData?.fields?.loginType === 'login'
+									}
+								/>{' '}
+								Login
+							</label>
+							<label className="text-md flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1">
+								<input
+									className="size-8 rounded-sm border-2 accent-orange"
+									type="radio"
+									name="loginType"
+									value="register"
+									data-1p-ignore
+									defaultChecked={actionData?.fields?.loginType === 'register'}
+								/>{' '}
+								Register
+							</label>
+						</fieldset>
+						<div className="mb-4 mt-2">
+							<Input
+								label="Username"
+								required
+								id="username-input"
+								name="username"
+								defaultValue={actionData?.fields?.username}
+								error={actionData?.fieldErrors?.username}
+							/>
+						</div>
+						<div className="mb-4 mt-2">
+							<PasswordInput
+								label="Password"
+								required
+								id="password-input"
+								name="password"
+								defaultValue={actionData?.fields?.password}
+								error={actionData?.fieldErrors?.password}
+							/>
+						</div>
+						<div className="mt-8 flex flex-col items-center">
+							{actionData?.formError ? (
+								<p className="text-thunderbird my-2 font-bold" role="alert">
+									{actionData.formError}
+								</p>
+							) : null}
+							<Button type="submit">Submit</Button>
+						</div>
+					</Form>
+				</div>
+				<ul className="flex justify-center">
 					<li>
-						<Link to='/'>Home</Link>
+						<Link className="text-xs" to="/">
+							Home
+						</Link>
 					</li>
 				</ul>
 			</div>
-		</div>
+		</Main>
 	);
 }
 

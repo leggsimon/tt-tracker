@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import {
 	Form,
@@ -14,10 +14,10 @@ import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/request.server';
 import { getUser, requireUserId } from '~/utils/session.server';
 
-import stylesUrl from '~/styles/new-game.css?url';
 import Header from '~/components/Header/Header';
-
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesUrl }];
+import { Button } from '~/components/Button/Button';
+import { Main } from '~/components/Main/Main';
+import { NumberInput, Input, SelectInput } from '~/components/Form/Form';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const user = await getUser(request);
@@ -57,7 +57,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const startingServerPlayerId = form.get('startingServerPlayerId');
 	const playedAt = form.get('playedAt');
 
-	const fields = { player1Id, player2Id, player1Score, player2Score, startingServerPlayerId };
+	const fields = {
+		player1Id,
+		player2Id,
+		player1Score,
+		player2Score,
+		startingServerPlayerId,
+	};
 	console.log({ fields });
 
 	if (
@@ -78,6 +84,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const fieldErrors = {
 		player1Score: validateScore(player1Score),
 		player2Score: validateScore(player2Score),
+		player2Id: player2Id === player1Id ? 'Opponent must be different' : null,
 	};
 
 	if (Object.values(fieldErrors).some(Boolean)) {
@@ -94,7 +101,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 			player2Id: player2Id,
 			player1Score: parseInt(player1Score, 10),
 			player2Score: parseInt(player2Score, 10),
-			startingPlayerId: startingServerPlayerId === 'player' ? player1Id : player2Id,
+			startingPlayerId:
+				startingServerPlayerId === 'player' ? player1Id : player2Id,
 			playedAt: new Date(playedAt),
 		},
 	});
@@ -111,7 +119,9 @@ export default function NewGameRoute() {
 
 	React.useEffect(() => {
 		setNowDateString(
-			new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0],
+			new Date(new Date().toString().split('GMT')[0] + ' UTC')
+				.toISOString()
+				.split('.')[0],
 		);
 	}, []);
 
@@ -122,86 +132,125 @@ export default function NewGameRoute() {
 	return (
 		<>
 			<Header user={data.user} />
-			<main>
-				<p>Add a new game</p>
-				<Form method='post' className='card' onSubmit={handleSubmit}>
-					<input type='hidden' name='player1Id' value={data.user.id} />
+			<Main>
+				<h1 className="text-3xl font-bold">Add a new game</h1>
+				<Form method="post" onSubmit={handleSubmit}>
+					<input type="hidden" name="player1Id" value={data.user.id} />
 
-					<label className='form-row'>
-						Opponent:
-						<select name='player2Id' required>
+					<div className="my-2 mb-4 flex flex-col gap-2">
+						<SelectInput
+							label="Opponent"
+							name="player2Id"
+							required
+							error={actionData?.fieldErrors?.player2Id}
+						>
 							{data.players
 								.filter((player) => player.id !== data.user.id)
 								.map((player) => (
-									<option key={player.id} value={player.id}>
+									<option
+										key={player.id}
+										value={player.id}
+										selected={player.id === actionData?.fields?.player2Id}
+									>
 										{player.username}
 									</option>
 								))}
-						</select>
-					</label>
-
-					<label className='form-row'>
-						Your score:
-						<input
-							required
-							min={0}
-							type='number'
-							name='player1Score'
-							defaultValue={actionData?.fields?.player1Score}
-						/>
-					</label>
-
-					<label className='form-row'>
-						Opponent’s score:
-						<input
-							required
-							min={0}
-							type='number'
-							name='player2Score'
-							defaultValue={actionData?.fields?.player2Score}
-						/>
-					</label>
-
-					<div className='form-row'>
-						<p>Who served first?</p>
-						<label>
-							<input
-								type='radio'
-								name='startingServerPlayerId'
-								value='player'
-								defaultChecked={actionData?.fields?.startingServerPlayerId === 'player'}
-							/>
-							You
-						</label>
-						<label>
-							<input
-								type='radio'
-								name='startingServerPlayerId'
-								value='opponent'
-								defaultChecked={actionData?.fields?.startingServerPlayerId === 'opponent'}
-							/>
-							Opponent
-						</label>
+						</SelectInput>
 					</div>
 
-					<label className='form-row'>
-						Played On:
-						<input type='datetime-local' name='playedAt' defaultValue={nowDateString} />
-					</label>
+					<div className="my-2 mb-4 flex flex-col gap-2">
+						<NumberInput
+							label="Your score"
+							name="player1Score"
+							required
+							min={0}
+							type="number"
+							defaultValue={
+								typeof actionData?.fields?.player1Score === 'string'
+									? actionData.fields.player1Score
+									: undefined
+							}
+							error={actionData?.fieldErrors?.player1Score}
+						/>
+					</div>
 
-					<div className='form-row'>
+					<div className="my-2 mb-4 flex flex-col gap-2">
+						<NumberInput
+							label="Opponent’s score"
+							name="player2Score"
+							required
+							min={0}
+							type="number"
+							defaultValue={
+								typeof actionData?.fields?.player2Score === 'string'
+									? actionData.fields.player2Score
+									: undefined
+							}
+							error={actionData?.fieldErrors?.player2Score}
+						/>
+					</div>
+
+					<fieldset className="my-2 mb-4 flex flex-col gap-2">
+						<legend className="text-sm font-bold">Who served first?</legend>
+						<div className="flex justify-between gap-4">
+							<label
+								className="text-md flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1"
+								htmlFor="startingServerPlayer1"
+							>
+								<input
+									className="size-8 rounded-sm border-2 accent-orange"
+									id="startingServerPlayer1"
+									type="radio"
+									name="startingServerPlayerId"
+									value="player"
+									defaultChecked={
+										actionData?.fields?.startingServerPlayerId === 'player'
+									}
+								/>
+								You
+							</label>
+							<label
+								className="text-md flex basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1"
+								htmlFor="startingServerPlayer2"
+							>
+								<input
+									className="size-8 rounded-sm border-2 accent-orange"
+									id="startingServerPlayer2"
+									type="radio"
+									name="startingServerPlayerId"
+									value="opponent"
+									defaultChecked={
+										actionData?.fields?.startingServerPlayerId === 'opponent'
+									}
+								/>
+								Opponent
+							</label>
+						</div>
+					</fieldset>
+
+					<div className="mb-4 mt-2">
+						<Input
+							label="Played on"
+							id="playedAt"
+							type="datetime-local"
+							name="playedAt"
+							defaultValue={nowDateString}
+						/>
+					</div>
+
+					<div className="mt-8 flex flex-col items-center">
 						{actionData?.formError ? (
-							<p className='form-validation-error' role='alert'>
+							<p className="text-thunderbird my-2 font-bold" role="alert">
 								{actionData.formError}
 							</p>
 						) : null}
 
-						<button type='submit' className='button' disabled={isSubmitting}>
+						<Button type="submit" disabled={isSubmitting}>
 							Submit
-						</button>
+						</Button>
 					</div>
 				</Form>
-			</main>
+			</Main>
 		</>
 	);
 }
@@ -209,14 +258,25 @@ export default function NewGameRoute() {
 export function ErrorBoundary() {
 	const error = useRouteError();
 
-	if (isRouteErrorResponse(error) && error.status === 401) {
-		return (
-			<div className='error-container'>
-				<p>You must be logged in to add a game.</p>
-				<Link to='/login'>Login</Link>
+	const content =
+		isRouteErrorResponse(error) && error.status === 401 ? (
+			<>
+				<p className="text-thunderbird">You must be logged in to add a game.</p>
+				<Button as={Link} to="/login">
+					Login
+				</Button>
+			</>
+		) : (
+			<div className="text-thunderbird">
+				Something unexpected went wrong. Sorry about that.
 			</div>
 		);
-	}
-
-	return <div className='error-container'>Something unexpected went wrong. Sorry about that.</div>;
+	return (
+		<>
+			<Header user={null} />
+			<Main>
+				<div className="flex flex-col items-center">{content}</div>
+			</Main>
+		</>
+	);
 }

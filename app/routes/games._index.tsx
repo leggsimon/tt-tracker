@@ -1,11 +1,19 @@
-import { LinksFunction, LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node';
+import { LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
-import stylesUrl from '~/styles/games.css?url';
 import { db } from '~/utils/db.server';
-
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesUrl }];
+import { Button } from '~/components/Button/Button';
+import { Main } from '~/components/Main/Main';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeaderCell,
+	TableHeaderRow,
+	TableRow,
+} from '~/components/Table/Table';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -34,7 +42,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 					player1: true,
 					player2: true,
 				},
-		  })
+			})
 		: [];
 
 	return json({
@@ -66,88 +74,127 @@ export default function GamesIndex() {
 		},
 	);
 
-	const gamesGroupedByByDate = data.games.reduce((acc, game) => {
-		const playedAtDate = new Date(game.playedAt).toLocaleDateString('en-GB');
-		if (!acc[playedAtDate]) {
-			acc[playedAtDate] = [];
-		}
-		acc[playedAtDate].push(game);
-		return acc;
-	}, {} as Record<string, typeof data.games>);
+	const gamesGroupedByByDate = data.games.reduce(
+		(acc, game) => {
+			const playedAtDate = new Date(game.playedAt).toLocaleDateString('en-GB');
+			if (!acc[playedAtDate]) {
+				acc[playedAtDate] = [];
+			}
+			acc[playedAtDate].push(game);
+			return acc;
+		},
+		{} as Record<string, typeof data.games>,
+	);
 
 	return (
 		<>
 			<Header user={data.user} />
-			<main>
-				<div className='header-row'>
-					<h1>Games</h1>
+			<Main>
+				<div className="flex items-center justify-between">
+					<h1 className="text-3xl font-bold">Games</h1>
 
-					<Link to='/games/new'>New Game</Link>
+					<Button as={Link} to="/games/new">
+						New Game
+					</Button>
 				</div>
-				<dl>
-					<dt>Total Points For</dt>
-					<dd>{totalPointsFor}</dd>
-					<dt>Total Points Against</dt>
-					<dd>{totalPointsAgainst}</dd>
+				<dl className="my-12 grid grid-cols-2 gap-4 text-center" role="table">
+					<dt className="font-bold">Total Points For</dt>
+					<dd className="row-start-2 text-4xl font-bold">{totalPointsFor}</dd>
+					<dt className="font-bold">Total Points Against</dt>
+					<dd className="row-start-2 text-4xl font-bold">
+						{totalPointsAgainst}
+					</dd>
+					<dt className="font-bold">Total Wins</dt>
+					<dd className="row-start-4 text-4xl font-bold">{7}</dd>
+					<dt className="font-bold">Total Losses</dt>
+					<dd className="row-start-4 text-4xl font-bold">{7}</dd>
 				</dl>
 
 				{Object.entries(gamesGroupedByByDate).map(([date, games]) => {
-					const gamesGroupedByOpponent = games.reduce((acc, game) => {
-						const opponentId = game.player1Id === data.user.id ? game.player2Id : game.player1Id;
-						if (!acc[opponentId]) {
-							acc[opponentId] = [];
-						}
-						acc[opponentId].push(game);
-						return acc;
-					}, {} as Record<string, typeof games>);
+					const gamesGroupedByOpponent = games.reduce(
+						(acc, game) => {
+							const opponentId =
+								game.player1Id === data.user.id
+									? game.player2Id
+									: game.player1Id;
+							if (!acc[opponentId]) {
+								acc[opponentId] = [];
+							}
+							acc[opponentId].push(game);
+							return acc;
+						},
+						{} as Record<string, typeof games>,
+					);
 					return (
-						<section className='card' key={date}>
-							<h2>{date}</h2>
-							{Object.entries(gamesGroupedByOpponent).map(([opponentId, games]) => {
-								const opponent =
-									games[0].player1Id === data.user.id ? games[0].player2 : games[0].player1;
-								return (
-									<table key={opponentId}>
-										<thead>
-											<tr>
-												<th>You</th>
-												<th>{opponent.username}</th>
-											</tr>
-										</thead>
-										<tbody>
-											{games.map((game) => {
-												const yourScore =
-													game.player1Id === data.user.id ? game.player1Score : game.player2Score;
-												const oppScore =
-													game.player1Id === data.user.id ? game.player2Score : game.player1Score;
-												const player1ServedFirst = game.startingPlayerId === game.player1Id;
-												return (
-													<tr key={game.id}>
-														<td className={yourScore > oppScore ? 'winner' : 'loser'}>
-															<Link to={`/games/${game.id}`}>
-																<span className='tabular-nums'>
+						<section
+							className="my-8 border-4 bg-white p-4 shadow-xl"
+							key={date}
+						>
+							<h2 className="mb-4 text-xl font-bold">{date}</h2>
+							{Object.entries(gamesGroupedByOpponent).map(
+								([opponentId, games]) => {
+									const opponent =
+										games[0].player1Id === data.user.id
+											? games[0].player2
+											: games[0].player1;
+									return (
+										<Table key={opponentId}>
+											<TableHead>
+												<TableHeaderRow>
+													<TableHeaderCell>You</TableHeaderCell>
+													<TableHeaderCell>{opponent.username}</TableHeaderCell>
+													<TableHeaderCell className="sr-only">
+														Link to game
+													</TableHeaderCell>
+												</TableHeaderRow>
+											</TableHead>
+											<TableBody>
+												{games.map((game) => {
+													const yourScore =
+														game.player1Id === data.user.id
+															? game.player1Score
+															: game.player2Score;
+													const oppScore =
+														game.player1Id === data.user.id
+															? game.player2Score
+															: game.player1Score;
+													const player1ServedFirst =
+														game.startingPlayerId === game.player1Id;
+													return (
+														<TableRow key={game.id}>
+															<TableCell>
+																<span
+																	className={
+																		yourScore > oppScore ? 'font-bold' : ''
+																	}
+																>
 																	{yourScore}
 																	{player1ServedFirst ? '*' : ''}
 																</span>
-															</Link>
-														</td>
-														<td className={yourScore < oppScore ? 'winner' : 'loser'}>
-															<Link to={`/games/${game.id}`}>
-																<span className='tabular-nums'>
+															</TableCell>
+															<TableCell>
+																<span
+																	className={
+																		yourScore < oppScore ? 'font-bold' : ''
+																	}
+																>
 																	{oppScore}
 																	{player1ServedFirst ? '' : '*'}
 																</span>
-															</Link>
-														</td>
-													</tr>
-												);
-											})}
-											<tr>
-												<td colSpan={2}>Totals</td>
-											</tr>
-											<tr>
-												<td>
-													<span className='tabular-nums'>
+															</TableCell>
+															<TableCell className="pr-4 text-right text-xs">
+																<Link to={`/games/${game.id}`}>View</Link>
+															</TableCell>
+														</TableRow>
+													);
+												})}
+												<TableHeaderRow className="border-3 border-black bg-sand text-left text-lg font-bold">
+													<th colSpan={3} className="px-6 py-2">
+														Totals
+													</th>
+												</TableHeaderRow>
+												<TableRow className="bg-peach">
+													<TableCell>
 														{games.reduce((acc, game) => {
 															if (game.player1Id === data.user.id) {
 																return acc + game.player1Score;
@@ -155,10 +202,8 @@ export default function GamesIndex() {
 																return acc + game.player2Score;
 															}
 														}, 0)}
-													</span>
-												</td>
-												<td>
-													<span className='tabular-nums'>
+													</TableCell>
+													<TableCell>
 														{games.reduce((acc, game) => {
 															if (game.player1Id === data.user.id) {
 																return acc + game.player2Score;
@@ -166,52 +211,68 @@ export default function GamesIndex() {
 																return acc + game.player1Score;
 															}
 														}, 0)}
-													</span>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								);
-							})}
+													</TableCell>
+													<td></td>
+												</TableRow>
+											</TableBody>
+										</Table>
+									);
+								},
+							)}
 						</section>
 					);
 				})}
 
 				{data.deletedGames.length > 0 ? (
 					<details>
-						<summary>Deleted Games</summary>
-						<table>
-							<thead>
-								<tr>
-									<th>Opponent</th>
-									<th>Your Score</th>
-									<th>Opponent’s Score</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
+						<summary className="font-bold">Deleted Games</summary>
+						<Table>
+							<TableHead>
+								<TableHeaderRow className="border-3 border-black bg-sand text-sm font-bold">
+									<TableHeaderCell>Opponent</TableHeaderCell>
+									<TableHeaderCell>Your Score</TableHeaderCell>
+									<TableHeaderCell>Opponent’s Score</TableHeaderCell>
+									<TableHeaderCell className="sr-only">
+										Link to game
+									</TableHeaderCell>
+								</TableHeaderRow>
+							</TableHead>
+							<TableBody>
 								{data.deletedGames.map((game) => {
-									const opponent = game.player1Id === data.user.id ? game.player2 : game.player1;
+									const opponent =
+										game.player1Id === data.user.id
+											? game.player2
+											: game.player1;
 									return (
-										<tr key={game.id}>
-											<td>{opponent.username}</td>
-											<td>
-												{game.player1Id === data.user.id ? game.player1Score : game.player2Score}
-											</td>
-											<td>
-												{game.player1Id === data.user.id ? game.player2Score : game.player1Score}
-											</td>
-											<td>
+										<TableRow key={game.id}>
+											<TableCell>
+												<span className="text-sm">{opponent.username}</span>
+											</TableCell>
+											<TableCell>
+												<span className="text-sm">
+													{game.player1Id === data.user.id
+														? game.player1Score
+														: game.player2Score}
+												</span>
+											</TableCell>
+											<TableCell>
+												<span className="text-sm">
+													{game.player1Id === data.user.id
+														? game.player2Score
+														: game.player1Score}
+												</span>
+											</TableCell>
+											<TableCell className="pr-4 text-right text-xs">
 												<Link to={`/games/${game.id}`}>View</Link>
-											</td>
-										</tr>
+											</TableCell>
+										</TableRow>
 									);
 								})}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</details>
 				) : null}
-			</main>
+			</Main>
 		</>
 	);
 }
