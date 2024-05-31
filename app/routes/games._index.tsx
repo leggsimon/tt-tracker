@@ -4,6 +4,7 @@ import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
 import { db } from '~/utils/db.server';
 import { Button } from '~/components/Button/Button';
+import { Main } from '~/components/Main/Main';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -79,7 +80,7 @@ export default function GamesIndex() {
 	return (
 		<>
 			<Header user={data.user} />
-			<main className="mx-auto flex max-w-96 flex-col px-6">
+			<Main>
 				<div className="flex items-center justify-between">
 					<h1 className="text-3xl font-bold">Games</h1>
 
@@ -249,7 +250,7 @@ export default function GamesIndex() {
 						</table>
 					</details>
 				) : null}
-			</main>
+			</Main>
 		</>
 	);
 }

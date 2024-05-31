@@ -16,6 +16,7 @@ import { getUser, requireUserId } from '~/utils/session.server';
 
 import Header from '~/components/Header/Header';
 import { Button } from '~/components/Button/Button';
+import { Main } from '~/components/Main/Main';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const user = await getUser(request);
@@ -129,7 +130,7 @@ export default function NewGameRoute() {
 	return (
 		<>
 			<Header user={data.user} />
-			<main className="mx-auto flex max-w-96 flex-col px-6">
+			<Main>
 				<h1 className="text-3xl font-bold">Add a new game</h1>
 				<Form method="post" className="card" onSubmit={handleSubmit}>
 					<input type="hidden" name="player1Id" value={data.user.id} />
@@ -237,7 +238,7 @@ export default function NewGameRoute() {
 
 					<div className="mt-8 flex flex-col items-center">
 						{actionData?.formError ? (
-							<p className="my-2 font-bold text-thunderbird" role="alert">
+							<p className="text-thunderbird my-2 font-bold" role="alert">
 								{actionData.formError}
 							</p>
 						) : null}
@@ -247,7 +248,7 @@ export default function NewGameRoute() {
 						</Button>
 					</div>
 				</Form>
-			</main>
+			</Main>
 		</>
 	);
 }
@@ -271,9 +272,9 @@ export function ErrorBoundary() {
 	return (
 		<>
 			<Header user={null} />
-			<main className="mx-auto flex max-w-96 flex-col px-6">
+			<Main>
 				<div className="flex flex-col items-center">{content}</div>
-			</main>
+			</Main>
 		</>
 	);
 }
