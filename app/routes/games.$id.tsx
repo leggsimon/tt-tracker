@@ -1,8 +1,4 @@
-import type {
-	ActionFunctionArgs,
-	LinksFunction,
-	LoaderFunctionArgs,
-} from '@remix-run/node';
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import {
 	isRouteErrorResponse,
@@ -10,16 +6,22 @@ import {
 	useLoaderData,
 	useRouteError,
 } from '@remix-run/react';
-
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeaderCell,
+	TableHeaderRow,
+	TableRow,
+} from '~/components/Table/Table';
 import { db } from '~/utils/db.server';
 import { getUser, requireUserId } from '~/utils/session.server';
 
 import Header from '~/components/Header/Header';
 import React from 'react';
-
-export const links: LinksFunction = () => [
-	{ rel: 'stylesheet', href: stylesUrl },
-];
+import { Main } from '~/components/Main/Main';
+import { Button } from '~/components/Button/Button';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 	const game = await db.game.findFirst({
@@ -31,6 +33,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 			player2: true,
 		},
 	});
+
+	if (!game) {
+		throw new Response('Game not found', { status: 404 });
+	}
+
 	const user = await getUser(request);
 	if (!user) {
 		throw new Response('Unauthorized', { status: 401 });
@@ -79,61 +86,44 @@ export default function GameRoute() {
 	return (
 		<>
 			<Header user={data.user} />
-			{data.game ? (
-				<main>
-					<p>Game</p>
-					<p>Played on: {date}</p>
-					<table>
-						<thead>
-							<tr>
-								<th>{data.game.player1.username}</th>
-								<th>{data.game.player2.username}</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									<span className="tabular-nums">{data.game.player1Score}</span>
-									{data.game.startingPlayerId === data.game.player1Id
-										? '*'
-										: ''}
-								</td>
-								<td>
-									<span className="tabular-nums">{data.game.player2Score}</span>
-									{data.game.startingPlayerId === data.game.player2Id
-										? '*'
-										: ''}
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<form method="post">
-						{data.game.isDeleted ? (
-							<button
-								className="button"
-								name="intent"
-								type="submit"
-								value="undelete"
-							>
-								Undelete
-							</button>
-						) : (
-							<button
-								className="button"
-								name="intent"
-								type="submit"
-								value="delete"
-							>
-								Delete
-							</button>
-						)}
-					</form>
-				</main>
-			) : (
-				<main>
-					<p>Game not found</p>
-				</main>
-			)}
+			<Main>
+				<h1 className="mb-4 text-3xl font-bold">Game</h1>
+				<p>
+					<span className="font-bold">Played on: </span>
+					{date}
+				</p>
+				<Table>
+					<TableHead>
+						<TableHeaderRow>
+							<TableHeaderCell>{data.game.player1.username}</TableHeaderCell>
+							<TableHeaderCell>{data.game.player2.username}</TableHeaderCell>
+						</TableHeaderRow>
+					</TableHead>
+					<TableBody>
+						<TableRow>
+							<TableCell>
+								<span>{data.game.player1Score}</span>
+								{data.game.startingPlayerId === data.game.player1Id ? '*' : ''}
+							</TableCell>
+							<TableCell>
+								<span>{data.game.player2Score}</span>
+								{data.game.startingPlayerId === data.game.player2Id ? '*' : ''}
+							</TableCell>
+						</TableRow>
+					</TableBody>
+				</Table>
+				<form method="post" className="my-6 flex justify-center">
+					{data.game.isDeleted ? (
+						<Button name="intent" type="submit" value="undelete">
+							Undelete
+						</Button>
+					) : (
+						<Button name="intent" type="submit" value="delete">
+							Delete
+						</Button>
+					)}
+				</form>
+			</Main>
 		</>
 	);
 }
@@ -143,18 +133,29 @@ export function ErrorBoundary() {
 
 	console.error(error);
 
+	let content = (
+		<div className="text-thunderbird">
+			Something unexpected went wrong. Sorry about that.
+		</div>
+	);
+
 	if (isRouteErrorResponse(error) && error.status === 401) {
-		return (
-			<div className="error-container">
-				<p>You must be logged in to view this game.</p>
-				<Link to="/login">Login</Link>
-			</div>
+		content = (
+			<>
+				<p className="text-thunderbird">You must be logged in to add a game.</p>
+				<Button as={Link} to="/login">
+					Login
+				</Button>
+			</>
 		);
 	}
 
 	return (
-		<div className="error-container">
-			Something unexpected went wrong. Sorry about that.
-		</div>
+		<>
+			<Header user={null} />
+			<Main>
+				<div className="flex flex-col items-center">{content}</div>
+			</Main>
+		</>
 	);
 }
