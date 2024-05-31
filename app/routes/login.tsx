@@ -1,20 +1,12 @@
-import type {
-	ActionFunctionArgs,
-	LinksFunction,
-	MetaFunction,
-} from '@remix-run/node';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
 import { Button } from '~/components/Button/Button';
+import { PasswordInput, Input } from '~/components/Form/Form';
 import { Main } from '~/components/Main/Main';
 
-import stylesUrl from '~/styles/login.css?url';
 import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/request.server';
 import { createUserSession, login, register } from '~/utils/session.server';
-
-export const links: LinksFunction = () => [
-	{ rel: 'stylesheet', href: stylesUrl },
-];
 
 function validateUsername(username: string) {
 	if (username.length < 3) {
@@ -157,59 +149,25 @@ export default function Login() {
 								Register
 							</label>
 						</fieldset>
-						<div className="my-2 mb-4 flex flex-col gap-2">
-							<label className="text-sm font-bold" htmlFor="username-input">
-								Username
-							</label>
-							<input
-								className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
-								type="text"
+						<div className="mb-4 mt-2">
+							<Input
+								label="Username"
+								required
 								id="username-input"
 								name="username"
 								defaultValue={actionData?.fields?.username}
-								aria-invalid={Boolean(actionData?.fieldErrors?.username)}
-								aria-errormessage={
-									actionData?.fieldErrors?.username
-										? 'username-error'
-										: undefined
-								}
+								error={actionData?.fieldErrors?.username}
 							/>
-							{actionData?.fieldErrors?.username ? (
-								<p
-									className="form-validation-error"
-									role="alert"
-									id="username-error"
-								>
-									{actionData.fieldErrors.username}
-								</p>
-							) : null}
 						</div>
-						<div className="my-2 mb-4 flex flex-col gap-2">
-							<label className="text-sm font-bold" htmlFor="password-input">
-								Password
-							</label>
-							<input
-								className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
+						<div className="mb-4 mt-2">
+							<PasswordInput
+								label="Password"
+								required
 								id="password-input"
 								name="password"
-								type="password"
 								defaultValue={actionData?.fields?.password}
-								aria-invalid={Boolean(actionData?.fieldErrors?.password)}
-								aria-errormessage={
-									actionData?.fieldErrors?.password
-										? 'password-error'
-										: undefined
-								}
+								error={actionData?.fieldErrors?.password}
 							/>
-							{actionData?.fieldErrors?.password ? (
-								<p
-									className="form-validation-error"
-									role="alert"
-									id="password-error"
-								>
-									{actionData.fieldErrors.password}
-								</p>
-							) : null}
 						</div>
 						<div className="mt-8 flex flex-col items-center">
 							{actionData?.formError ? (

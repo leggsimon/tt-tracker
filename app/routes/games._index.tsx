@@ -129,7 +129,7 @@ export default function GamesIndex() {
 											? games[0].player2
 											: games[0].player1;
 									return (
-										<table key={opponentId} className="border-3 w-full">
+										<table key={opponentId} className="border-3 my-6 w-full">
 											<thead className="">
 												<tr className="border-3 border-black bg-sand text-lg font-bold">
 													<th className="p-2">You</th>

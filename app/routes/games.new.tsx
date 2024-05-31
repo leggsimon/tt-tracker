@@ -17,6 +17,7 @@ import { getUser, requireUserId } from '~/utils/session.server';
 import Header from '~/components/Header/Header';
 import { Button } from '~/components/Button/Button';
 import { Main } from '~/components/Main/Main';
+import { NumberInput, Input, SelectInput } from '~/components/Form/Form';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const user = await getUser(request);
@@ -83,6 +84,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const fieldErrors = {
 		player1Score: validateScore(player1Score),
 		player2Score: validateScore(player2Score),
+		player2Id: player2Id === player1Id ? 'Opponent must be different' : null,
 	};
 
 	if (Object.values(fieldErrors).some(Boolean)) {
@@ -136,52 +138,55 @@ export default function NewGameRoute() {
 					<input type="hidden" name="player1Id" value={data.user.id} />
 
 					<div className="my-2 mb-4 flex flex-col gap-2">
-						<label className="text-sm font-bold" htmlFor="player2Id">
-							Opponent
-						</label>
-						<select
-							className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
-							id="player2Id"
+						<SelectInput
+							label="Opponent"
 							name="player2Id"
 							required
+							error={actionData?.fieldErrors?.player2Id}
 						>
 							{data.players
 								.filter((player) => player.id !== data.user.id)
 								.map((player) => (
-									<option key={player.id} value={player.id}>
+									<option
+										key={player.id}
+										value={player.id}
+										selected={player.id === actionData?.fields?.player2Id}
+									>
 										{player.username}
 									</option>
 								))}
-						</select>
+						</SelectInput>
 					</div>
 
 					<div className="my-2 mb-4 flex flex-col gap-2">
-						<label className="text-sm font-bold" htmlFor="player1Score">
-							Your score
-						</label>
-						<input
-							className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
-							id="player1Score"
+						<NumberInput
+							label="Your score"
+							name="player1Score"
 							required
 							min={0}
 							type="number"
-							name="player1Score"
-							defaultValue={actionData?.fields?.player1Score}
+							defaultValue={
+								typeof actionData?.fields?.player1Score === 'string'
+									? actionData.fields.player1Score
+									: undefined
+							}
+							error={actionData?.fieldErrors?.player1Score}
 						/>
 					</div>
 
 					<div className="my-2 mb-4 flex flex-col gap-2">
-						<label className="text-sm font-bold" htmlFor="player2Score">
-							Opponent’s score
-						</label>
-						<input
-							className="h-12 rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
-							id="player2Score"
+						<NumberInput
+							label="Opponent’s score"
+							name="player2Score"
 							required
 							min={0}
 							type="number"
-							name="player2Score"
-							defaultValue={actionData?.fields?.player2Score}
+							defaultValue={
+								typeof actionData?.fields?.player2Score === 'string'
+									? actionData.fields.player2Score
+									: undefined
+							}
+							error={actionData?.fieldErrors?.player2Score}
 						/>
 					</div>
 
@@ -223,12 +228,9 @@ export default function NewGameRoute() {
 						</div>
 					</fieldset>
 
-					<div className="my-2 mb-4 flex flex-col gap-2">
-						<label className="text-sm font-bold" htmlFor="playedAt">
-							Played on
-						</label>
-						<input
-							className="h-12 appearance-none rounded-none border-2 border-black bg-sand px-2 py-1 text-lg"
+					<div className="mb-4 mt-2">
+						<Input
+							label="Played on"
 							id="playedAt"
 							type="datetime-local"
 							name="playedAt"
