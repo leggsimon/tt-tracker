@@ -74,6 +74,16 @@ export default function GamesIndex() {
 		},
 	);
 
+	const totalWins = data.games.filter((game) => {
+		if (game.player1Id === data.user.id) {
+			return game.player1Score > game.player2Score;
+		} else {
+			return game.player2Score > game.player1Score;
+		}
+	}).length;
+
+	const totalLosses = data.games.length - totalWins;
+
 	const gamesGroupedByByDate = data.games.reduce(
 		(acc, game) => {
 			const playedAtDate = new Date(game.playedAt).toLocaleDateString('en-GB');
@@ -105,9 +115,9 @@ export default function GamesIndex() {
 						{totalPointsAgainst}
 					</dd>
 					<dt className="font-bold">Total Wins</dt>
-					<dd className="row-start-4 text-4xl font-bold">{7}</dd>
+					<dd className="row-start-4 text-4xl font-bold">{totalWins}</dd>
 					<dt className="font-bold">Total Losses</dt>
-					<dd className="row-start-4 text-4xl font-bold">{7}</dd>
+					<dd className="row-start-4 text-4xl font-bold">{totalLosses}</dd>
 				</dl>
 
 				{Object.entries(gamesGroupedByByDate).map(([date, games]) => {
