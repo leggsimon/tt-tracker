@@ -1,5 +1,4 @@
 import {
-	LinksFunction,
 	LoaderFunctionArgs,
 	json,
 	redirect,
@@ -8,9 +7,6 @@ import {
 import { useLoaderData } from '@remix-run/react';
 import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
-import stylesUrl from '~/styles/index.css?url';
-
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesUrl }];
 
 export const meta: MetaFunction = () => {
 	return [
