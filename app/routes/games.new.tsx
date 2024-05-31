@@ -185,11 +185,11 @@ export default function NewGameRoute() {
 						/>
 					</div>
 
-					<div className="my-2 mb-4 flex flex-col gap-2">
-						<p className="text-sm font-bold">Who served first?</p>
+					<fieldset className="my-2 mb-4 flex flex-col gap-2">
+						<legend className="text-sm font-bold">Who served first?</legend>
 						<div className="flex justify-between gap-4">
 							<label
-								className="flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1 text-lg"
+								className="text-md flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1"
 								htmlFor="startingServerPlayer1"
 							>
 								<input
@@ -205,7 +205,7 @@ export default function NewGameRoute() {
 								You
 							</label>
 							<label
-								className="flex basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1 text-lg"
+								className="text-md flex basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1"
 								htmlFor="startingServerPlayer2"
 							>
 								<input
@@ -221,7 +221,7 @@ export default function NewGameRoute() {
 								Opponent
 							</label>
 						</div>
-					</div>
+					</fieldset>
 
 					<div className="my-2 mb-4 flex flex-col gap-2">
 						<label className="text-sm font-bold" htmlFor="playedAt">
