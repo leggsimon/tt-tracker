@@ -175,9 +175,7 @@ export default function Login() {
 									{actionData.formError}
 								</p>
 							) : null}
-							<Button type="submit" className="button">
-								Submit
-							</Button>
+							<Button type="submit">Submit</Button>
 						</div>
 					</Form>
 				</div>

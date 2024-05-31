@@ -134,7 +134,7 @@ export default function NewGameRoute() {
 			<Header user={data.user} />
 			<Main>
 				<h1 className="text-3xl font-bold">Add a new game</h1>
-				<Form method="post" className="card" onSubmit={handleSubmit}>
+				<Form method="post" onSubmit={handleSubmit}>
 					<input type="hidden" name="player1Id" value={data.user.id} />
 
 					<div className="my-2 mb-4 flex flex-col gap-2">
