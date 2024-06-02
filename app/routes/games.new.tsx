@@ -17,6 +17,7 @@ import Header from '~/components/Header/Header';
 import { Button } from '~/components/Button/Button';
 import { Main } from '~/components/Main/Main';
 import { GameForm } from '~/components/GameForm/GameForm';
+import { useLocalStorageState } from '~/hooks/useLocalStorage';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const user = await getUser(request);
@@ -116,6 +117,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function NewGameRoute() {
 	const data = useLoaderData<typeof loader>();
 	const actionData = useActionData<typeof action>();
+	const [nextServer, setNextServer] = useLocalStorageState<
+		'player' | 'opponent' | null
+	>('nextServer', 'player');
 
 	const [nowDateString, setNowDateString] = React.useState('');
 
@@ -127,12 +131,27 @@ export default function NewGameRoute() {
 		);
 	}, []);
 
+	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+		const formData = new FormData(event.currentTarget);
+
+		const startingServerPlayerId = formData.get('startingServerPlayerId') as
+			| string
+			| null;
+
+		if (startingServerPlayerId === 'player') {
+			setNextServer('opponent');
+		} else if (startingServerPlayerId === 'opponent') {
+			setNextServer('player');
+		}
+	}
+
 	return (
 		<>
 			<Header user={data.user} />
 			<Main>
 				<h1 className="text-3xl font-bold">Add a new game</h1>
 				<GameForm
+					handleSubmit={handleSubmit}
 					players={data.players}
 					user={data.user}
 					fields={{
@@ -140,7 +159,8 @@ export default function NewGameRoute() {
 						player2Id: actionData?.fields?.player2Id,
 						player1Score: actionData?.fields?.player1Score,
 						player2Score: actionData?.fields?.player2Score,
-						startingServerPlayerId: actionData?.fields?.startingServerPlayerId,
+						startingServerPlayerId:
+							actionData?.fields?.startingServerPlayerId || nextServer,
 						playedAt: actionData?.fields?.playedAt || nowDateString,
 					}}
 					fieldErrors={{

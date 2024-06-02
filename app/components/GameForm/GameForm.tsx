@@ -4,6 +4,7 @@ import { Button } from '../Button/Button';
 import { SelectInput, NumberInput, Input } from '../Form/Form';
 
 type GameFormProps = {
+	handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 	fields: {
 		player1Id?: string | null;
 		player2Id?: string | null;
@@ -23,6 +24,7 @@ type GameFormProps = {
 };
 
 export function GameForm({
+	handleSubmit,
 	fieldErrors,
 	players,
 	fields,
@@ -34,8 +36,9 @@ export function GameForm({
 	return (
 		<Form
 			method="post"
-			onSubmit={() => {
+			onSubmit={(event) => {
 				setIsSubmitting(true);
+				handleSubmit(event);
 			}}
 		>
 			<input type="hidden" name="player1Id" value={user.id} />
