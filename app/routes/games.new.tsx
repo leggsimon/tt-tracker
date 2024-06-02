@@ -2,7 +2,6 @@ import React from 'react';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import {
-	Form,
 	isRouteErrorResponse,
 	Link,
 	useActionData,
@@ -17,7 +16,7 @@ import { getUser, requireUserId } from '~/utils/session.server';
 import Header from '~/components/Header/Header';
 import { Button } from '~/components/Button/Button';
 import { Main } from '~/components/Main/Main';
-import { NumberInput, Input, SelectInput } from '~/components/Form/Form';
+import { GameForm } from '~/components/GameForm/GameForm';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const user = await getUser(request);
@@ -48,14 +47,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const form = await request.formData();
 	console.log([...form.entries()]);
 
-	const player1Id = form.get('player1Id');
-	const player2Id = form.get('player2Id');
+	const player1Id = form.get('player1Id') as string | null;
+	const player2Id = form.get('player2Id') as string | null;
 
-	const player1Score = form.get('player1Score');
-	const player2Score = form.get('player2Score');
+	const player1Score = form.get('player1Score') as string | null;
+	const player2Score = form.get('player2Score') as string | null;
 
-	const startingServerPlayerId = form.get('startingServerPlayerId');
-	const playedAt = form.get('playedAt');
+	const startingServerPlayerId = form.get('startingServerPlayerId') as
+		| string
+		| null;
+	const playedAt = form.get('playedAt') as string | null;
 
 	const fields = {
 		player1Id,
@@ -63,6 +64,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		player1Score,
 		player2Score,
 		startingServerPlayerId,
+		playedAt,
 	};
 	console.log({ fields });
 
@@ -84,7 +86,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 	const fieldErrors = {
 		player1Score: validateScore(player1Score),
 		player2Score: validateScore(player2Score),
-		player2Id: player2Id === player1Id ? 'Opponent must be different' : null,
+		player2Id:
+			player2Id === player1Id ? 'Opponent must be different' : undefined,
 	};
 
 	if (Object.values(fieldErrors).some(Boolean)) {
@@ -115,7 +118,6 @@ export default function NewGameRoute() {
 	const actionData = useActionData<typeof action>();
 
 	const [nowDateString, setNowDateString] = React.useState('');
-	const [isSubmitting, setIsSubmitting] = React.useState(false);
 
 	React.useEffect(() => {
 		setNowDateString(
@@ -125,131 +127,29 @@ export default function NewGameRoute() {
 		);
 	}, []);
 
-	function handleSubmit() {
-		setIsSubmitting(true);
-	}
-
 	return (
 		<>
 			<Header user={data.user} />
 			<Main>
 				<h1 className="text-3xl font-bold">Add a new game</h1>
-				<Form method="post" onSubmit={handleSubmit}>
-					<input type="hidden" name="player1Id" value={data.user.id} />
-
-					<div className="my-2 mb-4 flex flex-col gap-2">
-						<SelectInput
-							label="Opponent"
-							name="player2Id"
-							required
-							error={actionData?.fieldErrors?.player2Id}
-						>
-							{data.players
-								.filter((player) => player.id !== data.user.id)
-								.map((player) => (
-									<option
-										key={player.id}
-										value={player.id}
-										selected={player.id === actionData?.fields?.player2Id}
-									>
-										{player.username}
-									</option>
-								))}
-						</SelectInput>
-					</div>
-
-					<div className="my-2 mb-4 flex flex-col gap-2">
-						<NumberInput
-							label="Your score"
-							name="player1Score"
-							required
-							min={0}
-							type="number"
-							defaultValue={
-								typeof actionData?.fields?.player1Score === 'string'
-									? actionData.fields.player1Score
-									: undefined
-							}
-							error={actionData?.fieldErrors?.player1Score}
-						/>
-					</div>
-
-					<div className="my-2 mb-4 flex flex-col gap-2">
-						<NumberInput
-							label="Opponent’s score"
-							name="player2Score"
-							required
-							min={0}
-							type="number"
-							defaultValue={
-								typeof actionData?.fields?.player2Score === 'string'
-									? actionData.fields.player2Score
-									: undefined
-							}
-							error={actionData?.fieldErrors?.player2Score}
-						/>
-					</div>
-
-					<fieldset className="my-2 mb-4 flex flex-col gap-2">
-						<legend className="text-sm font-bold">Who served first?</legend>
-						<div className="flex justify-between gap-4">
-							<label
-								className="text-md flex h-12 basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1"
-								htmlFor="startingServerPlayer1"
-							>
-								<input
-									className="size-8 rounded-sm border-2 accent-orange"
-									id="startingServerPlayer1"
-									type="radio"
-									name="startingServerPlayerId"
-									value="player"
-									defaultChecked={
-										actionData?.fields?.startingServerPlayerId === 'player'
-									}
-								/>
-								You
-							</label>
-							<label
-								className="text-md flex basis-1/2 items-center gap-4 rounded-xl border-2 border-black bg-sand px-2 py-1"
-								htmlFor="startingServerPlayer2"
-							>
-								<input
-									className="size-8 rounded-sm border-2 accent-orange"
-									id="startingServerPlayer2"
-									type="radio"
-									name="startingServerPlayerId"
-									value="opponent"
-									defaultChecked={
-										actionData?.fields?.startingServerPlayerId === 'opponent'
-									}
-								/>
-								Opponent
-							</label>
-						</div>
-					</fieldset>
-
-					<div className="mb-4 mt-2">
-						<Input
-							label="Played on"
-							id="playedAt"
-							type="datetime-local"
-							name="playedAt"
-							defaultValue={nowDateString}
-						/>
-					</div>
-
-					<div className="mt-8 flex flex-col items-center">
-						{actionData?.formError ? (
-							<p className="text-thunderbird my-2 font-bold" role="alert">
-								{actionData.formError}
-							</p>
-						) : null}
-
-						<Button type="submit" disabled={isSubmitting}>
-							Submit
-						</Button>
-					</div>
-				</Form>
+				<GameForm
+					players={data.players}
+					user={data.user}
+					fields={{
+						player1Id: data.user.id,
+						player2Id: actionData?.fields?.player2Id,
+						player1Score: actionData?.fields?.player1Score,
+						player2Score: actionData?.fields?.player2Score,
+						startingServerPlayerId: actionData?.fields?.startingServerPlayerId,
+						playedAt: actionData?.fields?.playedAt || nowDateString,
+					}}
+					fieldErrors={{
+						player2Id: actionData?.fieldErrors?.player2Id || undefined,
+						player1Score: actionData?.fieldErrors?.player1Score || undefined,
+						player2Score: actionData?.fieldErrors?.player2Score || undefined,
+					}}
+					formError={actionData?.formError || undefined}
+				/>
 			</Main>
 		</>
 	);
