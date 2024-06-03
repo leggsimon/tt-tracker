@@ -18,6 +18,7 @@ import { Button } from '~/components/Button/Button';
 import { Main } from '~/components/Main/Main';
 import { GameForm } from '~/components/GameForm/GameForm';
 import { useLocalStorageState } from '~/hooks/useLocalStorage';
+import { validateScore } from '~/utils/validations.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const user = await getUser(request);
@@ -33,20 +34,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 	return json({ user, players });
 };
 
-function validateScore(score: string) {
-	const int = parseInt(score, 10);
-	if (isNaN(int)) {
-		return 'Score must be a number';
-	} else if (int < 0) {
-		return 'Score must be a positive number';
-	}
-}
-
 export const action = async ({ request }: ActionFunctionArgs) => {
 	await requireUserId(request);
 
 	const form = await request.formData();
-	console.log([...form.entries()]);
 
 	const player1Id = form.get('player1Id') as string | null;
 	const player2Id = form.get('player2Id') as string | null;
