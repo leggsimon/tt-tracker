@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid'; // Using this instead of crypto.randomUUID() because crypto.randomUUID() is not available in iOS Safari over localhost http
 
 type InputProps = React.DetailedHTMLProps<
 	React.InputHTMLAttributes<HTMLInputElement>,
@@ -15,9 +16,9 @@ export function Input({
 	type = 'text',
 	...inputProps
 }: InputProps) {
-	const inputRef = React.useRef(inputProps?.id || crypto.randomUUID());
+	const inputRef = React.useRef(inputProps?.id || uuidv4());
 	const errorRef = React.useRef<string>(
-		inputProps?.id ? `${inputProps.id}-error` : crypto.randomUUID(),
+		inputProps?.id ? `${inputProps.id}-error` : uuidv4(),
 	);
 
 	return (
@@ -64,9 +65,9 @@ export function SelectInput({
 	children,
 	...inputProps
 }: SelectProps) {
-	const inputRef = React.useRef(inputProps?.id || crypto.randomUUID());
+	const inputRef = React.useRef(inputProps?.id || uuidv4());
 	const errorRef = React.useRef<string>(
-		inputProps?.id ? `${inputProps.id}-error` : crypto.randomUUID(),
+		inputProps?.id ? `${inputProps.id}-error` : uuidv4(),
 	);
 
 	return (
