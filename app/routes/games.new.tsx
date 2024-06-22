@@ -65,8 +65,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		typeof player2Id !== 'string' ||
 		typeof player1Score !== 'string' ||
 		typeof player2Score !== 'string' ||
-		typeof startingServerPlayerId !== 'string' ||
-		typeof playedAt !== 'string'
+		typeof startingServerPlayerId !== 'string'
 	) {
 		return badRequest({
 			fieldErrors: null,
@@ -98,7 +97,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 			player2Score: parseInt(player2Score, 10),
 			startingPlayerId:
 				startingServerPlayerId === 'player' ? player1Id : player2Id,
-			playedAt: new Date(playedAt),
+			playedAt: playedAt ? new Date(playedAt) : new Date(),
 		},
 	});
 
@@ -111,16 +110,6 @@ export default function NewGameRoute() {
 	const [nextServer, setNextServer] = useLocalStorageState<
 		'player' | 'opponent' | null
 	>('nextServer', 'player');
-
-	const [nowDateString, setNowDateString] = React.useState('');
-
-	React.useEffect(() => {
-		setNowDateString(
-			new Date(new Date().toString().split('GMT')[0] + ' UTC')
-				.toISOString()
-				.split('.')[0],
-		);
-	}, []);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		const formData = new FormData(event.currentTarget);
@@ -152,7 +141,7 @@ export default function NewGameRoute() {
 						player2Score: actionData?.fields?.player2Score,
 						startingServerPlayerId:
 							actionData?.fields?.startingServerPlayerId || nextServer,
-						playedAt: actionData?.fields?.playedAt || nowDateString,
+						playedAt: actionData?.fields?.playedAt,
 					}}
 					fieldErrors={{
 						player2Id: actionData?.fieldErrors?.player2Id || undefined,

@@ -133,13 +133,15 @@ export function GameForm({
 					id="playedAt"
 					type="datetime-local"
 					name="playedAt"
-					defaultValue={fields?.playedAt || undefined}
+					// FIXME: find out what string value to pass that will be valid in date input
+					// for now, default to not including it
+					// defaultValue={fields?.playedAt || undefined}
 				/>
 			</div>
 
 			<div className="mt-8 flex flex-col items-center">
 				{formError ? (
-					<p className="text-thunderbird my-2 font-bold" role="alert">
+					<p className="my-2 font-bold text-thunderbird" role="alert">
 						{formError}
 					</p>
 				) : null}
