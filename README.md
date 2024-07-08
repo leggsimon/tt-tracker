@@ -17,12 +17,13 @@ prisma db push
 prisma db seed
 ```
 
-This will create two users
+This will create three users
 
-| Username | Password        |
-| -------- | --------------- |
-| `Simon`  | `simonpassword` |
-| `Quinn`  | `quinnpassword` |
+| Username | Password         |
+| -------- | ---------------- |
+| `Simon`  | `simonpassword`  |
+| `Quinn`  | `quinnpassword`  |
+| `Shelly` | `shellypassword` |
 
 ### Database changes
 
