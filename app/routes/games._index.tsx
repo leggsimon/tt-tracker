@@ -1,3 +1,4 @@
+import React from 'react';
 import { LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import Header from '~/components/Header/Header';
@@ -14,6 +15,7 @@ import {
 	TableHeaderRow,
 	TableRow,
 } from '~/components/Table/Table';
+import { useLocalStorageState } from '~/hooks/useLocalStorage';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -30,7 +32,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 	if (!user) {
 		throw new Response('Unauthorized', { status: 401 });
 	}
-	const games = user
+	const games: Game[] = user
 		? await db.game.findMany({
 				where: {
 					OR: [{ player1Id: user.id }, { player2Id: user.id }],
@@ -45,16 +47,69 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 			})
 		: [];
 
+	const opponentIds: string[] = [
+		...new Set(
+			games
+				.flatMap((game) => {
+					return [game.player1Id, game.player2Id];
+				})
+				.filter((id) => id !== user.id),
+		),
+	];
+
+	const opponents: Player[] = await db.user.findMany({
+		select: {
+			id: true,
+			username: true,
+		},
+		where: {
+			id: {
+				in: opponentIds,
+			},
+		},
+	});
+
 	return json({
 		user,
+		opponents,
 		games: games.filter((game) => !game.isDeleted),
 		deletedGames: games.filter((game) => game.isDeleted),
 	});
 };
 
+type Game = {
+	id: string;
+	player1Id: string;
+	player2Id: string;
+	player1Score: number;
+	player2Score: number;
+	startingPlayerId: string;
+	playedAt: Date | string;
+	player1: Player;
+	player2: Player;
+	isDeleted: boolean;
+};
+
+type Player = {
+	id: string;
+	username: string;
+};
+
 export default function GamesIndex() {
 	const data = useLoaderData<typeof loader>();
-	const { totalPointsFor, totalPointsAgainst } = data.games.reduce(
+	const [filterPlayer, setFilterPlayer] = useLocalStorageState<string>('');
+
+	const includesFilterPlayer = (game: Game & { playedAt: string }) => {
+		if (!filterPlayer) {
+			return true;
+		}
+
+		return game.player1Id === filterPlayer || game.player2Id === filterPlayer;
+	};
+
+	const games = data.games.filter(includesFilterPlayer);
+
+	const { totalPointsFor, totalPointsAgainst } = games.reduce(
 		(acc, game) => {
 			if (game.player1Id === data.user.id) {
 				return {
@@ -74,7 +129,7 @@ export default function GamesIndex() {
 		},
 	);
 
-	const totalWins = data.games.filter((game) => {
+	const totalWins = games.filter((game) => {
 		if (game.player1Id === data.user.id) {
 			return game.player1Score > game.player2Score;
 		} else {
@@ -82,9 +137,9 @@ export default function GamesIndex() {
 		}
 	}).length;
 
-	const totalLosses = data.games.length - totalWins;
+	const totalLosses = games.length - totalWins;
 
-	const gamesGroupedByByDate = data.games.reduce(
+	const gamesGroupedByDate = games.reduce(
 		(acc, game) => {
 			const playedAtDate = new Date(game.playedAt).toLocaleDateString('en-GB');
 			if (!acc[playedAtDate]) {
@@ -93,8 +148,12 @@ export default function GamesIndex() {
 			acc[playedAtDate].push(game);
 			return acc;
 		},
-		{} as Record<string, typeof data.games>,
+		{} as Record<string, Game[]>,
 	);
+
+	const handleFilterSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		setFilterPlayer(event.target.value === 'all' ? '' : event.target.value);
+	};
 
 	return (
 		<>
@@ -106,6 +165,27 @@ export default function GamesIndex() {
 					<Button as={Link} to="/games/new">
 						New Game
 					</Button>
+				</div>
+				<div className="my-4 flex">
+					<select
+						onChange={handleFilterSelect}
+						className="w-full cursor-pointer border-3 border-black bg-linen px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
+					>
+						<option selected={!filterPlayer} value={'all'}>
+							All
+						</option>
+						{data.opponents.map((opponent) => {
+							return (
+								<option
+									selected={filterPlayer === opponent.id}
+									key={opponent.id}
+									value={opponent.id}
+								>
+									{opponent.username}
+								</option>
+							);
+						})}
+					</select>
 				</div>
 				<dl className="my-12 grid grid-cols-2 gap-4 text-center" role="table">
 					<dt className="font-bold">Total Points For</dt>
@@ -120,7 +200,7 @@ export default function GamesIndex() {
 					<dd className="row-start-4 text-4xl font-bold">{totalLosses}</dd>
 				</dl>
 
-				{Object.entries(gamesGroupedByByDate).map(([date, games]) => {
+				{Object.entries(gamesGroupedByDate).map(([date, games]) => {
 					const gamesGroupedByOpponent = games.reduce(
 						(acc, game) => {
 							const opponentId =
