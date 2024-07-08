@@ -1,6 +1,7 @@
 import React from 'react';
 import { LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
+import groupBy from 'lodash/groupBy';
 import Header from '~/components/Header/Header';
 import { getUser } from '~/utils/session.server';
 import { db } from '~/utils/db.server';
@@ -16,6 +17,12 @@ import {
 	TableRow,
 } from '~/components/Table/Table';
 import { useLocalStorageState } from '~/hooks/useLocalStorage';
+import {
+	Game,
+	Player,
+	PlayerNormalisedGame,
+	normaliseGame,
+} from '~/utils/game';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -77,79 +84,37 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 	});
 };
 
-type Game = {
-	id: string;
-	player1Id: string;
-	player2Id: string;
-	player1Score: number;
-	player2Score: number;
-	startingPlayerId: string;
-	playedAt: Date | string;
-	player1: Player;
-	player2: Player;
-	isDeleted: boolean;
-};
-
-type Player = {
-	id: string;
-	username: string;
-};
-
 export default function GamesIndex() {
 	const data = useLoaderData<typeof loader>();
 	const [filterPlayer, setFilterPlayer] = useLocalStorageState<string>('');
 
-	const includesFilterPlayer = (game: Game & { playedAt: string }) => {
+	const includesFilterPlayer = (game: PlayerNormalisedGame) => {
 		if (!filterPlayer) {
 			return true;
 		}
 
-		return game.player1Id === filterPlayer || game.player2Id === filterPlayer;
+		return game.opponent.id === filterPlayer;
 	};
 
-	const games = data.games.filter(includesFilterPlayer);
+	const games = data.games
+		.map((game) => normaliseGame(game, data.user.id))
+		.filter(includesFilterPlayer);
 
-	const { totalPointsFor, totalPointsAgainst } = games.reduce(
-		(acc, game) => {
-			if (game.player1Id === data.user.id) {
-				return {
-					totalPointsFor: acc.totalPointsFor + game.player1Score,
-					totalPointsAgainst: acc.totalPointsAgainst + game.player2Score,
-				};
-			} else {
-				return {
-					totalPointsFor: acc.totalPointsFor + game.player2Score,
-					totalPointsAgainst: acc.totalPointsAgainst + game.player1Score,
-				};
-			}
-		},
-		{
-			totalPointsFor: 0,
-			totalPointsAgainst: 0,
-		},
-	);
+	const totalPointsFor = games.reduce((acc, game) => {
+		return acc + game.playerScore;
+	}, 0);
 
-	const totalWins = games.filter((game) => {
-		if (game.player1Id === data.user.id) {
-			return game.player1Score > game.player2Score;
-		} else {
-			return game.player2Score > game.player1Score;
-		}
-	}).length;
+	const totalPointsAgainst = games.reduce((acc, game) => {
+		return acc + game.opponentScore;
+	}, 0);
+
+	const totalWins = games.filter(
+		(game) => game.playerScore > game.opponentScore,
+	).length;
 
 	const totalLosses = games.length - totalWins;
 
-	const gamesGroupedByDate = games.reduce(
-		(acc, game) => {
-			const playedAtDate = new Date(game.playedAt).toLocaleDateString('en-GB');
-			if (!acc[playedAtDate]) {
-				acc[playedAtDate] = [];
-			}
-			acc[playedAtDate].push(game);
-			return acc;
-		},
-		{} as Record<string, Game[]>,
-	);
+	const gamesGroupedByDate = groupBy(games, 'playedAt');
 
 	const handleFilterSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setFilterPlayer(event.target.value === 'all' ? '' : event.target.value);
@@ -201,20 +166,8 @@ export default function GamesIndex() {
 				</dl>
 
 				{Object.entries(gamesGroupedByDate).map(([date, games]) => {
-					const gamesGroupedByOpponent = games.reduce(
-						(acc, game) => {
-							const opponentId =
-								game.player1Id === data.user.id
-									? game.player2Id
-									: game.player1Id;
-							if (!acc[opponentId]) {
-								acc[opponentId] = [];
-							}
-							acc[opponentId].push(game);
-							return acc;
-						},
-						{} as Record<string, typeof games>,
-					);
+					const gamesGroupedByOpponent = groupBy(games, 'opponent.id');
+
 					return (
 						<section
 							className="my-8 border-4 bg-white p-4 shadow-xl"
@@ -223,16 +176,14 @@ export default function GamesIndex() {
 							<h2 className="mb-4 text-xl font-bold">{date}</h2>
 							{Object.entries(gamesGroupedByOpponent).map(
 								([opponentId, games]) => {
-									const opponent =
-										games[0].player1Id === data.user.id
-											? games[0].player2
-											: games[0].player1;
 									return (
 										<Table key={opponentId}>
 											<TableHead>
 												<TableHeaderRow>
 													<TableHeaderCell>You</TableHeaderCell>
-													<TableHeaderCell>{opponent.username}</TableHeaderCell>
+													<TableHeaderCell>
+														{games[0].opponent.username}
+													</TableHeaderCell>
 													<TableHeaderCell className="sr-only">
 														Link to game
 													</TableHeaderCell>
@@ -240,36 +191,30 @@ export default function GamesIndex() {
 											</TableHead>
 											<TableBody>
 												{games.map((game) => {
-													const yourScore =
-														game.player1Id === data.user.id
-															? game.player1Score
-															: game.player2Score;
-													const oppScore =
-														game.player1Id === data.user.id
-															? game.player2Score
-															: game.player1Score;
-													const player1ServedFirst =
-														game.startingPlayerId === game.player1Id;
 													return (
 														<TableRow key={game.id}>
 															<TableCell>
 																<span
 																	className={
-																		yourScore > oppScore ? 'font-bold' : ''
+																		game.playerScore > game.opponentScore
+																			? 'font-bold'
+																			: ''
 																	}
 																>
-																	{yourScore}
-																	{player1ServedFirst ? '*' : ''}
+																	{game.playerScore}
+																	{game.startingServer === 'player' && '*'}
 																</span>
 															</TableCell>
 															<TableCell>
 																<span
 																	className={
-																		yourScore < oppScore ? 'font-bold' : ''
+																		game.playerScore < game.opponentScore
+																			? 'font-bold'
+																			: ''
 																	}
 																>
-																	{oppScore}
-																	{player1ServedFirst ? '' : '*'}
+																	{game.opponentScore}
+																	{game.startingServer === 'opponent' && '*'}
 																</span>
 															</TableCell>
 															<TableCell className="pr-4 text-right text-xs">
@@ -286,20 +231,12 @@ export default function GamesIndex() {
 												<TableRow className="bg-peach">
 													<TableCell>
 														{games.reduce((acc, game) => {
-															if (game.player1Id === data.user.id) {
-																return acc + game.player1Score;
-															} else {
-																return acc + game.player2Score;
-															}
+															return acc + game.playerScore;
 														}, 0)}
 													</TableCell>
 													<TableCell>
 														{games.reduce((acc, game) => {
-															if (game.player1Id === data.user.id) {
-																return acc + game.player2Score;
-															} else {
-																return acc + game.player1Score;
-															}
+															return acc + game.opponentScore;
 														}, 0)}
 													</TableCell>
 													<td></td>

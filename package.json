@@ -18,6 +18,7 @@
 		"@types/uuid": "^9.0.8",
 		"bcryptjs": "^2.4.3",
 		"isbot": "^4.1.0",
+		"lodash": "^4.17.21",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"uuid": "^9.0.1"
@@ -26,6 +27,7 @@
 		"@flydotio/dockerfile": "^0.5.7",
 		"@remix-run/dev": "^2.9.2",
 		"@types/bcryptjs": "^2.4.6",
+		"@types/lodash": "^4.17.6",
 		"@types/react": "^18.2.20",
 		"@types/react-dom": "^18.2.7",
 		"@typescript-eslint/eslint-plugin": "^6.7.4",
