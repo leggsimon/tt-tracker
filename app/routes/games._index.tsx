@@ -134,18 +134,13 @@ export default function GamesIndex() {
 				<div className="my-4 flex">
 					<select
 						onChange={handleFilterSelect}
+						defaultValue={filterPlayer || 'all'}
 						className="w-full cursor-pointer border-3 border-black bg-linen px-6 py-2 text-sm font-bold shadow-md hover:bg-sand focus:bg-sand"
 					>
-						<option selected={!filterPlayer} value={'all'}>
-							All
-						</option>
+						<option value={'all'}>All</option>
 						{data.opponents.map((opponent) => {
 							return (
-								<option
-									selected={filterPlayer === opponent.id}
-									key={opponent.id}
-									value={opponent.id}
-								>
+								<option key={opponent.id} value={opponent.id}>
 									{opponent.username}
 								</option>
 							);
