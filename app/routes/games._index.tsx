@@ -173,6 +173,20 @@ export default function GamesIndex() {
 							<h2 className="mb-4 text-xl font-bold">{date}</h2>
 							{Object.entries(gamesGroupedByOpponent).map(
 								([opponentId, games]) => {
+									const playerWins = games.filter(
+										(game) => game.playerScore > game.opponentScore,
+									).length;
+
+									const opponentWins = games.length - playerWins;
+
+									const playerTotalPoints = games.reduce((acc, game) => {
+										return acc + game.playerScore;
+									}, 0);
+
+									const opponentTotalPoints = games.reduce((acc, game) => {
+										return acc + game.opponentScore;
+									}, 0);
+
 									return (
 										<Table key={opponentId}>
 											<TableHead>
@@ -227,14 +241,10 @@ export default function GamesIndex() {
 												</TableHeaderRow>
 												<TableRow className="bg-peach">
 													<TableCell>
-														{games.reduce((acc, game) => {
-															return acc + game.playerScore;
-														}, 0)}
+														{playerWins} ({playerTotalPoints})
 													</TableCell>
 													<TableCell>
-														{games.reduce((acc, game) => {
-															return acc + game.opponentScore;
-														}, 0)}
+														{opponentWins} ({opponentTotalPoints})
 													</TableCell>
 													<td></td>
 												</TableRow>
