@@ -97,6 +97,9 @@ export default function GameRoute() {
 						<TableHeaderRow>
 							<TableHeaderCell>{data.game.player1.username}</TableHeaderCell>
 							<TableHeaderCell>{data.game.player2.username}</TableHeaderCell>
+							<TableHeaderCell className="sr-only">
+								Link to edit game
+							</TableHeaderCell>
 						</TableHeaderRow>
 					</TableHead>
 					<TableBody>
@@ -108,6 +111,9 @@ export default function GameRoute() {
 							<TableCell>
 								<span>{data.game.player2Score}</span>
 								{data.game.startingPlayerId === data.game.player2Id ? '*' : ''}
+							</TableCell>
+							<TableCell className="pr-4 text-right text-xs">
+								<Link to={`/games/${data.game.id}/edit`}>Edit</Link>
 							</TableCell>
 						</TableRow>
 					</TableBody>

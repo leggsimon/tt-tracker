@@ -18,6 +18,7 @@ type GameFormProps = {
 		player1Score?: string | null;
 		player2Score?: string | null;
 	};
+	hideDateField?: boolean;
 	players: { id: string; username: string }[];
 	user: { id: string };
 	formError?: string;
@@ -30,6 +31,7 @@ export function GameForm({
 	fields,
 	user,
 	formError,
+	hideDateField = false,
 }: GameFormProps) {
 	const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -127,17 +129,19 @@ export function GameForm({
 				</div>
 			</fieldset>
 
-			<div className="mb-4 mt-2">
-				<Input
-					label="Played on"
-					id="playedAt"
-					type="datetime-local"
-					name="playedAt"
-					// FIXME: find out what string value to pass that will be valid in date input
-					// for now, default to not including it
-					// defaultValue={fields?.playedAt || undefined}
-				/>
-			</div>
+			{hideDateField ? null : (
+				<div className="mb-4 mt-2">
+					<Input
+						label="Played on"
+						id="playedAt"
+						type="datetime-local"
+						name="playedAt"
+						// FIXME: find out what string value to pass that will be valid in date input
+						// for now, default to not including it
+						// defaultValue={fields?.playedAt || undefined}
+					/>
+				</div>
+			)}
 
 			<div className="mt-8 flex flex-col items-center">
 				{formError ? (
