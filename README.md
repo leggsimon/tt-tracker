@@ -56,3 +56,9 @@ To open the app
 ```sh
 fly apps open
 ```
+
+## Database download
+
+```
+fly ssh sftp get /data/sqlite.db sqlite.db
+```
